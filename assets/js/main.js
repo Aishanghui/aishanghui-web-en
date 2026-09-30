@@ -172,6 +172,7 @@ function sectionHead(t, badgeText) {
 
 function buildHeader(t) {
   var logo = el("a", { class: "logo", href: "#top" });
+  logo.addEventListener("click", function (e) { e.preventDefault(); showView("home"); });
   logo.appendChild(el("span", { class: "logo-mark" }, "ASH"));
   logo.appendChild(el("span", { class: "logo-text" }, t.brand));
 
