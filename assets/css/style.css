@@ -191,6 +191,34 @@ body {
 .footer { background: #14161f; color: #a6aac0; padding: 28px 0; text-align: center; font-size: 14px; }
 
 /* ---------- 响应式 ---------- */
+/* ---------- 卡片可点击 ---------- */
+.card-link { cursor: pointer; text-decoration: none; color: inherit; display: flex; flex-direction: column; }
+.card-link:hover .card-title { color: var(--brand); }
+.card-more { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--brand); }
+
+/* ---------- 关于我们 ---------- */
+.about { background: #fff; border-bottom: 1px solid var(--line); }
+.about-intro { max-width: 760px; margin: 0 auto 30px; color: var(--muted); font-size: 16px; }
+.about-intro p { margin: 0 0 12px; }
+.about-block { max-width: 880px; margin: 0 auto 34px; }
+.about-h3 { font-size: 18px; margin: 0 0 14px; text-align: center; }
+.about-list { max-width: 680px; margin: 0 auto; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.about-list li { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; font-weight: 500; }
+.strength-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.strength-card { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+.strength-card h4 { margin: 0 0 8px; font-size: 16px; }
+.strength-card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+/* ---------- 详情增强 ---------- */
+.detail-desc { color: var(--muted); font-size: 16px; margin: 0 0 4px; }
+.scope-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 4px; }
+.scope-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
+.scope-name { font-weight: 700; font-size: 16px; margin-bottom: 10px; color: var(--brand); }
+.scope-list { margin: 0; padding-inline-start: 18px; color: var(--muted); font-size: 14px; }
+.scope-list li { margin-bottom: 6px; }
+.scope-note { text-align: center; color: var(--muted); font-size: 14px; margin: 18px 0 0; }
+
+/* ---------- 响应式 ---------- */
 @media (max-width: 860px) {
   .hero-title { font-size: 32px; }
   .detail-grid, .contact-grid { grid-template-columns: 1fr; gap: 24px; }

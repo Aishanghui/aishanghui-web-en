@@ -172,6 +172,7 @@ function buildHeader(t) {
   var nav = el("nav", { class: "nav" });
   var links = [
     [t.nav.home, "top"],
+    [t.nav.about, "about"],
     [t.nav.services, "services"],
     [t.nav.ppt, "ppt"],
     [t.nav.miniapp, "miniapp"],
@@ -218,15 +219,48 @@ function buildServices(t) {
   var c = container();
   c.appendChild(sectionHead(t.services, null));
   var grid = el("div", { class: "cards" });
-  t.services.items.forEach(function (it) {
-    var card = el("div", { class: "card" });
+  var targets = ["ppt", "miniapp", "web", "wholesale", "reception"];
+  t.services.items.forEach(function (it, i) {
+    var card = el("a", { class: "card card-link", href: "#" + targets[i] });
     card.appendChild(el("div", { class: "card-icon" }, it.icon));
     card.appendChild(el("h3", { class: "card-title" }, it.title));
     card.appendChild(el("p", { class: "card-desc" }, it.desc));
+    card.appendChild(el("span", { class: "card-more" }, (t.services.more || "→")));
+    card.addEventListener("click", function (e) { e.preventDefault(); scrollToId(targets[i]); });
     grid.appendChild(card);
   });
   c.appendChild(grid);
   return section("services", "", c);
+}
+
+function buildAbout(t) {
+  var c = container();
+  c.appendChild(sectionHead(t.about, null));
+
+  var intro = el("div", { class: "about-intro" });
+  t.about.intro.forEach(function (p) { intro.appendChild(el("p", {}, p)); });
+  c.appendChild(intro);
+
+  var scopeBlock = el("div", { class: "about-block" });
+  scopeBlock.appendChild(el("h3", { class: "about-h3" }, t.about.scopeTitle));
+  var scopeList = el("ul", { class: "about-list" });
+  t.about.scope.forEach(function (s) { scopeList.appendChild(el("li", {}, s)); });
+  scopeBlock.appendChild(scopeList);
+  c.appendChild(scopeBlock);
+
+  var sw = el("div", { class: "about-block" });
+  sw.appendChild(el("h3", { class: "about-h3" }, t.about.strengthsTitle));
+  var grid = el("div", { class: "strength-grid" });
+  t.about.strengths.forEach(function (s) {
+    var card = el("div", { class: "strength-card" });
+    card.appendChild(el("h4", {}, s.title));
+    card.appendChild(el("p", {}, s.desc));
+    grid.appendChild(card);
+  });
+  sw.appendChild(grid);
+  c.appendChild(sw);
+
+  return section("about", "about", c);
 }
 
 function buildDetail(id, t) {
@@ -235,6 +269,7 @@ function buildDetail(id, t) {
   var info = el("div", { class: "detail-info" });
   info.appendChild(el("span", { class: "badge" }, t.title));
   info.appendChild(el("h2", { class: "section-title" }, t.tagline));
+  if (t.desc) info.appendChild(el("p", { class: "detail-desc" }, t.desc));
 
   info.appendChild(el("h4", { class: "detail-sub" }, t.processTitle));
   var steps = el("ol", { class: "steps" });
@@ -252,6 +287,21 @@ function buildDetail(id, t) {
   grid.appendChild(info);
   grid.appendChild(side);
   c.appendChild(grid);
+
+  if (t.scope && t.scope.length) {
+    c.appendChild(el("h4", { class: "detail-sub" }, t.scopeTitle));
+    var sc = el("div", { class: "scope-grid" });
+    t.scope.forEach(function (tier) {
+      var card = el("div", { class: "scope-card" });
+      card.appendChild(el("div", { class: "scope-name" }, tier.name));
+      var ul = el("ul", { class: "scope-list" });
+      tier.features.forEach(function (f) { ul.appendChild(el("li", {}, f)); });
+      card.appendChild(ul);
+      sc.appendChild(card);
+    });
+    c.appendChild(sc);
+    c.appendChild(el("p", { class: "scope-note" }, t.scopeNote || ""));
+  }
   return section(id, "detail", c);
 }
 
@@ -334,6 +384,22 @@ function buildFooter(t) {
 /* ---------- 主渲染 ---------- */
 function render() {
   var t = window.I18N[currentLang];
+  var en = window.I18N.en;
+
+  // 新增字段回退到英文，保证未翻译语言不缺失关键板块
+  if (currentLang !== "en") {
+    if (t.nav && !t.nav.about) t.nav.about = en.nav.about;
+    if (t.services && !t.services.more) t.services.more = en.services.more;
+    if (!t.about) t.about = en.about;
+    ["ppt", "miniapp", "web"].forEach(function (k) {
+      if (!t[k] || !en[k]) return;
+      if (!t[k].desc) t[k].desc = en[k].desc;
+      if (!t[k].scopeTitle) t[k].scopeTitle = en[k].scopeTitle;
+      if (!t[k].scope) t[k].scope = en[k].scope;
+      if (!t[k].scopeNote) t[k].scopeNote = en[k].scopeNote;
+    });
+  }
+
   document.documentElement.lang = currentLang;
   document.documentElement.dir = t.dir;
   document.title = t.brand + " · " + t.hero.badge;
@@ -342,6 +408,7 @@ function render() {
   app.innerHTML = "";
   app.appendChild(buildHeader(t));
   app.appendChild(buildHero(t));
+  app.appendChild(buildAbout(t));
   app.appendChild(buildServices(t));
   app.appendChild(buildDetail("ppt", t.ppt));
   app.appendChild(buildDetail("miniapp", t.miniapp));
