@@ -270,11 +270,7 @@ function buildDetail(id, t) {
   c.appendChild(el("h2", { class: "section-title" }, t.tagline));
   if (t.desc) c.appendChild(el("p", { class: "detail-desc" }, t.desc));
 
-  var L = window.I18N[currentLang];
-  var moreLabel = (L.services && L.services.more) || "查看详情";
-  var lessLabel = L.less || "收起";
-  var toggle = el("button", { class: "btn btn-primary", type: "button" }, moreLabel);
-  var body = el("div", { class: "detail-body", style: "display:none" });
+  var body = el("div", { class: "detail-body" });
 
   var list = el("ul", { class: "check-list" });
   t.items.forEach(function (it) { list.appendChild(el("li", {}, "✓ " + it)); });
@@ -304,13 +300,6 @@ function buildDetail(id, t) {
     if (t.scopeNote) body.appendChild(el("p", { class: "scope-note" }, t.scopeNote));
   }
 
-  toggle.addEventListener("click", function () {
-    var open = body.style.display !== "none";
-    body.style.display = open ? "none" : "block";
-    toggle.textContent = open ? moreLabel : lessLabel;
-  });
-
-  c.appendChild(el("div", { class: "center" }, toggle));
   c.appendChild(body);
   return section(id, "detail-page", c);
 }
