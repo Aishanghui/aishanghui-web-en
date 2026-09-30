@@ -214,9 +214,15 @@ body {
 .scope-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 4px; }
 .scope-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
 .scope-name { font-weight: 700; font-size: 16px; margin-bottom: 10px; color: var(--brand); }
+.scope-price { font-size: 22px; font-weight: 800; color: var(--brand); margin: 2px 0 12px; }
 .scope-list { margin: 0; padding-inline-start: 18px; color: var(--muted); font-size: 14px; }
 .scope-list li { margin-bottom: 6px; }
 .scope-note { text-align: center; color: var(--muted); font-size: 14px; margin: 18px 0 0; }
+
+/* ---------- 简洁首页 + 层级详情 ---------- */
+.detail-page { background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.backbar { padding: 20px 0 0; }
+.detail-body { margin-top: 8px; }
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 860px) {

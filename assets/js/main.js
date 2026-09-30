@@ -47,11 +47,17 @@ function detectLang() {
 }
 
 var currentLang = detectLang();
+var view = "home";
 
 /* ---------- 导航平滑滚动 ---------- */
 function scrollToId(id) {
   var n = document.getElementById(id);
   if (n) n.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function showView(id) {
+  view = id;
+  render();
 }
 
 /* ---------- 语言切换下拉 ---------- */
@@ -171,19 +177,13 @@ function buildHeader(t) {
 
   var nav = el("nav", { class: "nav" });
   var links = [
-    [t.nav.home, "top"],
+    [t.nav.home, "home"],
     [t.nav.about, "about"],
-    [t.nav.services, "services"],
-    [t.nav.ppt, "ppt"],
-    [t.nav.miniapp, "miniapp"],
-    [t.nav.web, "web"],
-    [t.nav.reception, "reception"],
-    [t.nav.wholesale, "wholesale"],
     [t.nav.contact, "contact"]
   ];
   links.forEach(function (pair) {
     var a = el("a", { class: "nav-link", href: "#" + pair[1] }, pair[0]);
-    a.addEventListener("click", function (e) { e.preventDefault(); scrollToId(pair[1]); });
+    a.addEventListener("click", function (e) { e.preventDefault(); showView(pair[1]); });
     nav.appendChild(a);
   });
 
@@ -207,7 +207,7 @@ function buildHero(t) {
   var btns = el("div", { class: "hero-btns" });
   var b1 = el("a", { class: "btn btn-primary", href: "#contact" }, t.hero.cta1);
   var b2 = el("a", { class: "btn btn-ghost", href: "#services" }, t.hero.cta2);
-  b1.addEventListener("click", function (e) { e.preventDefault(); scrollToId("contact"); });
+  b1.addEventListener("click", function (e) { e.preventDefault(); showView("contact"); });
   b2.addEventListener("click", function (e) { e.preventDefault(); scrollToId("services"); });
   btns.appendChild(b1); btns.appendChild(b2);
   inner.appendChild(btns);
@@ -226,7 +226,7 @@ function buildServices(t) {
     card.appendChild(el("h3", { class: "card-title" }, it.title));
     card.appendChild(el("p", { class: "card-desc" }, it.desc));
     card.appendChild(el("span", { class: "card-more" }, (t.services.more || "→")));
-    card.addEventListener("click", function (e) { e.preventDefault(); scrollToId(targets[i]); });
+    card.addEventListener("click", function (e) { e.preventDefault(); showView(targets[i]); });
     grid.appendChild(card);
   });
   c.appendChild(grid);
@@ -265,44 +265,53 @@ function buildAbout(t) {
 
 function buildDetail(id, t) {
   var c = container();
-  var grid = el("div", { class: "detail-grid" });
-  var info = el("div", { class: "detail-info" });
-  info.appendChild(el("span", { class: "badge" }, t.title));
-  info.appendChild(el("h2", { class: "section-title" }, t.tagline));
-  if (t.desc) info.appendChild(el("p", { class: "detail-desc" }, t.desc));
+  c.appendChild(el("span", { class: "badge" }, t.title));
+  c.appendChild(el("h2", { class: "section-title" }, t.tagline));
+  if (t.desc) c.appendChild(el("p", { class: "detail-desc" }, t.desc));
 
-  info.appendChild(el("h4", { class: "detail-sub" }, t.processTitle));
-  var steps = el("ol", { class: "steps" });
-  t.process.forEach(function (s) { steps.appendChild(el("li", {}, s)); });
-  info.appendChild(steps);
+  var L = window.I18N[currentLang];
+  var moreLabel = (L.services && L.services.more) || "查看详情";
+  var lessLabel = L.less || "收起";
+  var toggle = el("button", { class: "btn btn-primary", type: "button" }, moreLabel);
+  var body = el("div", { class: "detail-body", style: "display:none" });
 
-  info.appendChild(el("h4", { class: "detail-sub" }, t.deliverTitle));
-  info.appendChild(el("p", { class: "detail-deliver" }, t.deliver));
-
-  var side = el("div", { class: "detail-side" });
   var list = el("ul", { class: "check-list" });
   t.items.forEach(function (it) { list.appendChild(el("li", {}, "✓ " + it)); });
-  side.appendChild(list);
+  body.appendChild(list);
 
-  grid.appendChild(info);
-  grid.appendChild(side);
-  c.appendChild(grid);
+  body.appendChild(el("h4", { class: "detail-sub" }, t.processTitle));
+  var steps = el("ol", { class: "steps" });
+  t.process.forEach(function (s) { steps.appendChild(el("li", {}, s)); });
+  body.appendChild(steps);
+
+  body.appendChild(el("h4", { class: "detail-sub" }, t.deliverTitle));
+  body.appendChild(el("p", { class: "detail-deliver" }, t.deliver));
 
   if (t.scope && t.scope.length) {
-    c.appendChild(el("h4", { class: "detail-sub" }, t.scopeTitle));
+    body.appendChild(el("h4", { class: "detail-sub" }, t.scopeTitle));
     var sc = el("div", { class: "scope-grid" });
     t.scope.forEach(function (tier) {
       var card = el("div", { class: "scope-card" });
       card.appendChild(el("div", { class: "scope-name" }, tier.name));
+      if (tier.price) card.appendChild(el("div", { class: "scope-price" }, tier.price));
       var ul = el("ul", { class: "scope-list" });
       tier.features.forEach(function (f) { ul.appendChild(el("li", {}, f)); });
       card.appendChild(ul);
       sc.appendChild(card);
     });
-    c.appendChild(sc);
-    c.appendChild(el("p", { class: "scope-note" }, t.scopeNote || ""));
+    body.appendChild(sc);
+    if (t.scopeNote) body.appendChild(el("p", { class: "scope-note" }, t.scopeNote));
   }
-  return section(id, "detail", c);
+
+  toggle.addEventListener("click", function () {
+    var open = body.style.display !== "none";
+    body.style.display = open ? "none" : "block";
+    toggle.textContent = open ? moreLabel : lessLabel;
+  });
+
+  c.appendChild(el("div", { class: "center" }, toggle));
+  c.appendChild(body);
+  return section(id, "detail-page", c);
 }
 
 function buildReception(t) {
@@ -381,6 +390,27 @@ function buildFooter(t) {
   return el("footer", { class: "footer" }, el("div", { class: "container" }, t.footer.copyright));
 }
 
+function backBar(t) {
+  var wrap = el("div", { class: "backbar" });
+  var c = container();
+  var b = el("button", { class: "btn btn-ghost", type: "button" }, "← " + (t.back || "返回"));
+  b.addEventListener("click", function () { showView("home"); });
+  c.appendChild(b);
+  wrap.appendChild(c);
+  return wrap;
+}
+
+function buildModule(id, t) {
+  var wrap = el("div", {});
+  wrap.appendChild(backBar(t));
+  if (id === "about") wrap.appendChild(buildAbout(t));
+  else if (id === "ppt" || id === "miniapp" || id === "web") wrap.appendChild(buildDetail(id, t[id]));
+  else if (id === "reception") wrap.appendChild(buildReception(t));
+  else if (id === "wholesale") wrap.appendChild(buildWholesale(t));
+  else if (id === "contact") wrap.appendChild(buildContact(t));
+  return wrap;
+}
+
 /* ---------- 主渲染 ---------- */
 function render() {
   var t = window.I18N[currentLang];
@@ -388,6 +418,8 @@ function render() {
 
   // 新增字段回退到英文，保证未翻译语言不缺失关键板块
   if (currentLang !== "en") {
+    if (!t.back) t.back = en.back;
+    if (!t.less) t.less = en.less;
     if (t.nav && !t.nav.about) t.nav.about = en.nav.about;
     if (t.services && !t.services.more) t.services.more = en.services.more;
     if (!t.about) t.about = en.about;
@@ -407,16 +439,14 @@ function render() {
   var app = document.getElementById("app");
   app.innerHTML = "";
   app.appendChild(buildHeader(t));
-  app.appendChild(buildHero(t));
-  app.appendChild(buildAbout(t));
-  app.appendChild(buildServices(t));
-  app.appendChild(buildDetail("ppt", t.ppt));
-  app.appendChild(buildDetail("miniapp", t.miniapp));
-  app.appendChild(buildDetail("web", t.web));
-  app.appendChild(buildReception(t));
-  app.appendChild(buildWholesale(t));
-  app.appendChild(buildContact(t));
+  if (view === "home") {
+    app.appendChild(buildHero(t));
+    app.appendChild(buildServices(t));
+  } else {
+    app.appendChild(buildModule(view, t));
+  }
   app.appendChild(buildFooter(t));
+  window.scrollTo(0, 0);
 }
 
 document.addEventListener("DOMContentLoaded", render);
