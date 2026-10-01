@@ -353,9 +353,10 @@ function buildWholesale(t) {
     if (cat.items && cat.items.length) {
       var list = el("div", { class: "wholesale-products" });
       cat.items.forEach(function (it) {
-        var card = el("div", { class: "wholesale-product" });
+        var card = el("div", { class: "wholesale-product product-click" });
         card.appendChild(el("div", { class: "wholesale-product-name" }, it.name));
         card.appendChild(el("div", { class: "wholesale-product-price" }, it.price));
+        card.addEventListener("click", function () { openProductModal(it, cat); });
         list.appendChild(card);
       });
       details.appendChild(list);
@@ -369,6 +370,63 @@ function buildWholesale(t) {
   cta.addEventListener("click", function (e) { e.preventDefault(); showView("contact"); });
   c.appendChild(el("div", { class: "center" }, cta));
   return section("wholesale", "wholesale", c);
+}
+
+function productLabels() {
+  if (currentLang === "zh") {
+    return {
+      stock: "现货在售",
+      self: "爱商汇自营商品",
+      source: "1688 源头直供 · 已通过质检与合规审查",
+      desc: "本商品由 1688 源头采集，经本站质检后上架展示，属本站自营商品。",
+      contact: "联系采购 / 洽谈",
+      category: "类目",
+      close: "关闭"
+    };
+  }
+  return {
+    stock: "In Stock",
+    self: "AiShangHui self-operated product",
+    source: "1688 factory-direct · quality & compliance checked",
+    desc: "Sourced from 1688 and quality-checked by AiShangHui. Listed as our own product.",
+    contact: "Contact Us",
+    category: "Category",
+    close: "Close"
+  };
+}
+
+function openProductModal(it, cat) {
+  var L = productLabels();
+  var overlay = el("div", { class: "product-modal-overlay" });
+  var box = el("div", { class: "product-modal" });
+
+  var close = el("button", { class: "product-modal-close", type: "button", "aria-label": L.close }, "✕");
+  close.addEventListener("click", function () { overlay.remove(); });
+  overlay.addEventListener("click", function (e) { if (e.target === overlay) overlay.remove(); });
+
+  var img = el("div", { class: "product-modal-img" }, "🛍️");
+  var stock = el("span", { class: "product-modal-stock" }, L.stock);
+  var name = el("h3", { class: "product-modal-name" }, it.name);
+  var meta = el("div", { class: "product-modal-meta" }, L.category + "：" + (cat.name || cat));
+  var price = el("div", { class: "product-modal-price" }, it.price);
+  var self = el("div", { class: "product-modal-self" }, L.self);
+  var desc = el("p", { class: "product-modal-desc" }, L.desc);
+  var source = el("p", { class: "product-modal-source" }, L.source);
+  var cta = el("button", { class: "btn btn-primary", type: "button" }, L.contact);
+  cta.addEventListener("click", function () { overlay.remove(); showView("contact"); });
+
+  box.appendChild(close);
+  box.appendChild(img);
+  box.appendChild(stock);
+  box.appendChild(name);
+  box.appendChild(meta);
+  box.appendChild(price);
+  box.appendChild(self);
+  box.appendChild(desc);
+  box.appendChild(source);
+  box.appendChild(cta);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
 }
 
 function buildContact(t) {
