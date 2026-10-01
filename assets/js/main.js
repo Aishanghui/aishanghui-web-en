@@ -9,7 +9,8 @@
 var SITE_CONFIG = {
   wechat: "wxid_bzgv0cn5l16922",
   email: "19325116173@163.com",
-  phone: "+86 193 2511 6173"
+  phone: "+86 193 2511 6173",
+  formEndpoint: ""
 };
 
 /* ---------- 工具函数 ---------- */
@@ -35,10 +36,10 @@ function el(tag, attrs) {
 function detectLang() {
   var p = new URLSearchParams(location.search).get("lang");
   if (p && window.I18N[p]) return p;
+  if (window.SITE_DEFAULT_LANG && window.I18N[window.SITE_DEFAULT_LANG]) return window.SITE_DEFAULT_LANG;
   var s = null;
   try { s = localStorage.getItem("lang"); } catch (e) {}
   if (s && window.I18N[s]) return s;
-  if (window.SITE_DEFAULT_LANG && window.I18N[window.SITE_DEFAULT_LANG]) return window.SITE_DEFAULT_LANG;
   var b = (navigator.language || "en").toLowerCase();
   if (window.I18N[b]) return b;
   var two = b.split("-")[0];
@@ -396,17 +397,49 @@ function buildContact(t) {
   info.appendChild(row("🕒", t.contact.hours, t.contact.hoursVal));
 
   var form = el("form", { class: "contact-form" });
-  form.appendChild(el("input", { class: "field", type: "text", placeholder: t.contact.form.name }));
-  form.appendChild(el("input", { class: "field", type: "text", placeholder: t.contact.form.contact }));
-  form.appendChild(el("textarea", { class: "field", rows: "4", placeholder: t.contact.form.message }));
+  var nameInput = el("input", { class: "field", type: "text", name: "name", placeholder: t.contact.form.name });
+  var contactInput = el("input", { class: "field", type: "text", name: "contact", placeholder: t.contact.form.contact });
+  var msgInput = el("textarea", { class: "field", name: "message", rows: "4", placeholder: t.contact.form.message });
+  form.appendChild(nameInput);
+  form.appendChild(contactInput);
+  form.appendChild(msgInput);
   var status = el("div", { class: "form-status" });
   var submit = el("button", { class: "btn btn-primary", type: "submit" }, t.contact.form.send);
   form.appendChild(submit);
   form.appendChild(status);
   form.addEventListener("submit", function (e) {
     e.preventDefault();
-    status.textContent = t.contact.form.success;
+    var name = nameInput.value.trim();
+    var contact = contactInput.value.trim();
+    var message = msgInput.value.trim();
+    if (!message) {
+      status.textContent = currentLang === "zh" ? "请填写留言内容。" : "Please write a message.";
+      status.classList.add("show");
+      return;
+    }
+    status.textContent = currentLang === "zh" ? "发送中…" : "Sending…";
     status.classList.add("show");
+    if (SITE_CONFIG.formEndpoint) {
+      fetch(SITE_CONFIG.formEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ name: name, contact: contact, message: message, lang: currentLang })
+      }).then(function (r) {
+        if (r.ok) {
+          status.textContent = t.contact.form.success;
+          form.reset();
+        } else {
+          status.textContent = currentLang === "zh" ? "发送失败，请直接邮件联系我们。" : "Send failed, please email us directly.";
+        }
+      }).catch(function () {
+        status.textContent = currentLang === "zh" ? "发送失败，请直接邮件联系我们。" : "Send failed, please email us directly.";
+      });
+      return;
+    }
+    var subject = (currentLang === "zh" ? "官网咨询" : "Website inquiry") + (name ? " - " + name : "");
+    var body = "Name: " + name + "\nContact: " + contact + "\n\n" + message;
+    location.href = "mailto:" + SITE_CONFIG.email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    status.textContent = t.contact.form.success;
     form.reset();
   });
 
