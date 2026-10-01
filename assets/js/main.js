@@ -352,7 +352,9 @@ function buildWholesale(t) {
   c.appendChild(sectionHead(t.wholesale, null));
 
   var cats = el("div", { class: "wholesale-cats" });
-  t.wholesale.categories.forEach(function (cat) {
+  var catsData = (window.PRODUCTS && window.PRODUCTS[currentLang] && window.PRODUCTS[currentLang].categories)
+    ? window.PRODUCTS[currentLang].categories : t.wholesale.categories;
+  catsData.forEach(function (cat) {
     var details = el("details", { class: "wholesale-cat" });
     details.appendChild(el("summary", {}, (cat.icon ? cat.icon + " " : "") + (cat.name || "")));
     if (cat.items && cat.items.length) {
