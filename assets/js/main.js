@@ -369,7 +369,7 @@ function buildWholesale(t) {
   });
   c.appendChild(cats);
 
-  c.appendChild(el("p", { class: "wholesale-note" }, t.wholesale.note));
+  if (t.wholesale.note) c.appendChild(el("p", { class: "wholesale-note" }, t.wholesale.note));
   var cta = el("a", { class: "btn btn-primary", href: "#contact" }, t.wholesale.cta);
   cta.addEventListener("click", function (e) { e.preventDefault(); showView("contact"); });
   c.appendChild(el("div", { class: "center" }, cta));
