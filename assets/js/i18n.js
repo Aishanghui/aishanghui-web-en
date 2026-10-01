@@ -11,10 +11,10 @@ window.I18N = {
     services: { title: "我们的服务", subtitle: "为个人与企业提供专业、快速、可靠的数字服务。", more: "查看详情",
       items: [
         { icon: "📊", title: "PPT制作", desc: "汇报演示、商业提案、融资路演、培训课件，排版专业美观。" },
-        { icon: "📱", title: "小程序开发", desc: "根据业务需求定制微信小程序，从需求到上线全程交付。" },
+        { icon: "📱", title: "小程序开发", desc: "专业定制小程序，从需求到上线全程交付。" },
         { icon: "🌐", title: "网页设计", desc: "企业官网、落地页、响应式设计，随时可上线。" },
-        { icon: "🛒", title: "商品批发", desc: "源头好货、批发供货、支持一件代发。" },
-        { icon: "🤖", title: "商务洽谈", desc: "智能商务洽谈助手，7×24 自动回复，解答客户疑问、捕捉商机。" }
+        { icon: "🛒", title: "商品批发", desc: "源头好货、批发供货。" },
+        { icon: "🤖", title: "商务洽谈", desc: "欢迎您来洽谈。" }
       ] },
     about: { title: "公司简介", subtitle: "爱商汇（AiShangHui）—— 一站式数字服务与供应链服务平台", intro: ["爱商汇是一家专注于数字化服务与商品供应链的综合服务平台，业务覆盖 PPT 制作、小程序开发、网页设计、商务洽谈与商品批发超市五大板块，为个人创业者、中小微企业和电商卖家提供从创意到落地的全流程支持。", "我们坚持“专业、快速、可靠”的服务理念，以标准化流程和全线上协作，帮助客户用更低的成本、更短的时间，获得高质量的数字成果与稳定货源。"], scopeTitle: "业务范围", scope: ["PPT 制作：商务汇报、融资路演、产品发布、培训课件", "小程序开发：电商、预约服务、功能定制、微信生态整合", "网页设计：企业官网、落地页、H5、响应式与 SEO 友好结构", "商务洽谈：7×24 小时智能回复，解答疑问、捕捉商机", "商品批发超市：源头直供，日用百货、数码配件、家居好物等"], strengthsTitle: "核心优势", strengths: [{ title: "一站式服务", desc: "设计、开发、供应链、客服全部打通，一个平台解决多种需求。" }, { title: "快速交付", desc: "标准化流程与专职团队，确保项目按约定工期保质交付。" }, { title: "价格透明", desc: "阶梯化报价、交付范围清晰，无隐藏费用。" }, { title: "售后保障", desc: "合同约定的修改与售后支持，一个工作日内响应。" }] },
     ppt: { title: "PPT制作", tagline: "让你的想法更有说服力。", desc: "面向个人与企业的高品质演示文稿定制服务，让你的内容表达更清晰、更有说服力。", items: ["商务汇报", "融资路演", "产品发布", "培训课件"], processTitle: "制作流程", process: ["需求沟通", "大纲确认", "初稿设计", "修改交付"], deliverTitle: "交付方式", deliver: "可编辑源文件、PDF 版、图片版。", advantagesTitle: "核心优势", advantages: [{ title: "专业版式设计", desc: "资深设计师排版，视觉统一、层次清晰。" }, { title: "数据可视化", desc: "复杂数据转化为直观图表，说服力更强。" }, { title: "快速交付", desc: "标准化流程，常规需求 1–3 天交付。" }, { title: "可编辑源文件", desc: "交付可编辑源文件，后续修改更灵活。" }], scopeTitle: "服务方案", scope: [{ name: "基础版", price: "100 元", features: ["10 页以内", "统一模板风格", "图文排版", "提供 PDF"] }, { name: "进阶版", price: "200 元", features: ["20 页以内", "定制版式设计", "图表与数据可视化", "可编辑源文件 + PDF"] }, { name: "完整版", price: "300 元", features: ["页数不限", "深度定制视觉", "动画与演示备注", "3 次修改 + 全套交付"] }], scopeNote: "以上为国内人民币价格，国外按美元计价，具体以沟通确认为准。" },
@@ -42,10 +42,10 @@ window.I18N = {
     services: { title: "What we do", subtitle: "Professional, fast and reliable digital services for individuals and businesses.", more: "Learn more",
       items: [
         { icon: "📊", title: "PPT Design", desc: "Reports, proposals, pitch decks and training decks with clean, professional layouts." },
-        { icon: "📱", title: "Mini Programs", desc: "WeChat mini programs tailored to your business, from concept to launch." },
+        { icon: "📱", title: "Mini Programs", desc: "Professional custom mini programs, from requirements to launch." },
         { icon: "🌐", title: "Web Design", desc: "Corporate sites, landing pages and responsive design, ready to publish." },
-        { icon: "🛒", title: "Wholesale", desc: "Factory-direct goods, wholesale supply and drop shipping available." },
-        { icon: "🤖", title: "Business Chat", desc: "Smart business-chat assistant with 24/7 auto-reply to answer questions and capture leads." }
+        { icon: "🛒", title: "Wholesale", desc: "Factory-direct goods, wholesale supply." },
+        { icon: "🤖", title: "Business Chat", desc: "Welcome to business chat." }
       ] },
     about: { title: "About Us", subtitle: "AiShangHui — a one-stop digital services and supply-chain platform", intro: ["AiShangHui is a comprehensive service platform focused on digital services and product supply chains. Our business covers PPT design, mini-program development, web design, business chat and wholesale supply — supporting individual entrepreneurs, small and medium-sized businesses and e-commerce sellers from idea to launch.", "We are committed to being professional, fast and reliable. Through standardized processes and fully online collaboration, we help clients get high-quality digital results and stable product sources at lower cost and in less time."], scopeTitle: "What we do", scope: ["PPT design: business reports, pitch decks, product launches and training", "Mini programs: e-commerce, booking services, custom features and WeChat integration", "Web design: corporate sites, landing pages, H5, responsive and SEO-friendly structure", "Business chat: 24/7 smart auto-reply to answer questions and capture leads", "Wholesale supermarket: factory-direct supply of daily essentials, digital accessories, home goods and more"], strengthsTitle: "Why choose us", strengths: [{ title: "One-stop service", desc: "Design, development, supply chain and support in one place." }, { title: "Fast delivery", desc: "Standardized processes and a dedicated team deliver on schedule." }, { title: "Transparent pricing", desc: "Tiered quotes with clear scope and no hidden fees." }, { title: "After-sales support", desc: "Contract-agreed revisions and support, replied within one business day." }] },
     ppt: { title: "PPT Design", tagline: "Make your ideas look sharp.", desc: "High-quality presentation design for individuals and businesses, making your message clearer and more convincing.", items: ["Business reports", "Pitch decks and fundraising", "Product launches", "Training and education"], processTitle: "Process", process: ["Requirement briefing", "Outline confirmation", "First draft design", "Revisions and delivery"], deliverTitle: "Delivery", deliver: "Editable source file, PDF and image version.", advantagesTitle: "Why choose us", advantages: [{ title: "Professional layout", desc: "Clean, consistent visuals with a clear hierarchy." }, { title: "Data visualization", desc: "Turn complex data into clear, persuasive charts." }, { title: "Fast delivery", desc: "Standardized process, typical projects delivered in 1–3 days." }, { title: "Editable source files", desc: "Get editable source files for flexible future edits." }], scopeTitle: "Packages", scope: [{ name: "Basic", price: "$100", features: ["Up to 10 slides", "Unified template style", "Layout and typography", "PDF included"] }, { name: "Pro", price: "$200", features: ["Up to 20 slides", "Custom layout design", "Charts and data visualization", "Editable source + PDF"] }, { name: "Complete", price: "$300", features: ["Unlimited slides", "Deep visual customization", "Animations and speaker notes", "3 revision rounds + full delivery"] }], scopeNote: "Prices are in USD for international clients, RMB for China. Final quote confirmed on request." },
@@ -72,10 +72,10 @@ window.I18N = {
     services: { title: "サービス内容", subtitle: "個人・企業向けに、専門的で迅速かつ信頼できるデジタルサービスを提供します。",
       items: [
         { icon: "📊", title: "PPT制作", desc: "報告、提案、ピッチ、研修資料を美しくプロフェッショナルに制作。" },
-        { icon: "📱", title: "ミニアプリ", desc: "ビジネスに合わせたWeChatミニアプリを企画から公開まで。" },
+        { icon: "📱", title: "ミニアプリ", desc: "プロ仕様のカスタムミニアプリを要件定義から公開まで。" },
         { icon: "🌐", title: "Webデザイン", desc: "企業サイト、LP、レスポンシブ対応。すぐに公開できます。" },
-        { icon: "🛒", title: "卸売", desc: "工場直送の商品、卸売供給、無在庫販売も対応。" },
-        { icon: "🤖", title: "スマート受付", desc: "24時間365日の自動返信で問い合わせを取り込み。" }
+        { icon: "🛒", title: "卸売", desc: "工場直送の良品を卸売供給。" },
+        { icon: "🤖", title: "スマート受付", desc: "お気軽にご相談ください。" }
       ] },
     ppt: { title: "PPT制作", tagline: "アイデアを説得力ある形に。", items: ["ビジネス報告", "ピッチ・資金調達", "製品発表", "研修資料"], processTitle: "制作の流れ", process: ["要件ヒアリング", "構成確認", "初稿デザイン", "修正・納品"], deliverTitle: "納品物", deliver: "編集可能な元ファイル、PDF版、画像版。" },
     miniapp: { title: "ミニアプリ開発", tagline: "ビジネスに合わせたWeChatミニアプリ。", items: ["ECミニアプリ", "予約・サービスツール", "カスタム機能", "WeChat連携"], processTitle: "開発の流れ", process: ["要件分析", "プロトタイプ・デザイン", "開発", "テスト・公開"], deliverTitle: "納品物", deliver: "ソースコード、体験版、公開サポート。" },
@@ -101,10 +101,10 @@ window.I18N = {
     services: { title: "제공 서비스", subtitle: "개인과 기업을 위한 전문적이고 빠르고 신뢰할 수 있는 디지털 서비스입니다.",
       items: [
         { icon: "📊", title: "PPT 제작", desc: "보고서, 제안서, 피치덱, 교육 자료를 깔끔하고 전문적으로 제작합니다." },
-        { icon: "📱", title: "미니 프로그램", desc: "비즈니스에 맞춘 위챗 미니 프로그램을 기획부터 출시까지." },
+        { icon: "📱", title: "미니 프로그램", desc: "전문 맞춤 미니 프로그램, 요구사항부터 출시까지." },
         { icon: "🌐", title: "웹 디자인", desc: "기업 사이트, 랜딩 페이지, 반응형 디자인. 바로 배포 가능." },
-        { icon: "🛒", title: "도매", desc: "공장 직송 상품, 도매 공급, 무재고 판매 지원." },
-        { icon: "🤖", title: "스마트 접수", desc: "24시간 자동 응답으로 문의를 놓치지 않습니다." }
+        { icon: "🛒", title: "도매", desc: "공장 직송 좋은 상품, 도매 공급." },
+        { icon: "🤖", title: "스마트 접수", desc: "상담을 환영합니다." }
       ] },
     ppt: { title: "PPT 제작", tagline: "아이디어를 설득력 있게.", items: ["비즈니스 보고", "피치덱·투자 유치", "제품 발표", "교육 자료"], processTitle: "제작 과정", process: ["요구사항 상담", "구성 확정", "초안 디자인", "수정·납품"], deliverTitle: "납품 내역", deliver: "편집 가능한 원본, PDF, 이미지 버전." },
     miniapp: { title: "미니 프로그램 개발", tagline: "비즈니스에 맞춘 위챗 미니 프로그램.", items: ["전자상거래 미니 프로그램", "예약·서비스 도구", "맞춤 기능", "위챗 생태계 연동"], processTitle: "개발 과정", process: ["요구사항 분석", "프로토타입·디자인", "개발", "테스트·출시"], deliverTitle: "납품 내역", deliver: "소스 코드, 체험판, 출시 지원." },
@@ -130,10 +130,10 @@ window.I18N = {
     services: { title: "Nos services", subtitle: "Des services numériques professionnels, rapides et fiables pour les particuliers et les entreprises.",
       items: [
         { icon: "📊", title: "Création PPT", desc: "Rapports, propositions, pitchs et supports de formation avec une mise en page soignée." },
-        { icon: "📱", title: "Mini-programmes", desc: "Des mini-programmes WeChat adaptés à votre activité, du concept au lancement." },
+        { icon: "📱", title: "Mini-programmes", desc: "Mini-programmes sur mesure et professionnels, de l'analyse du besoin au lancement." },
         { icon: "🌐", title: "Web", desc: "Sites vitrines, pages de destination et design responsive, prêts à publier." },
-        { icon: "🛒", title: "Vente en gros", desc: "Produits en direct usine, approvisionnement en gros et dropshipping." },
-        { icon: "🤖", title: "Accueil intelligent", desc: "Réponses automatiques 24h/24 pour capter les demandes." }
+        { icon: "🛒", title: "Vente en gros", desc: "Produits de qualité en direct usine, approvisionnement en gros." },
+        { icon: "🤖", title: "Accueil intelligent", desc: "Bienvenue pour discuter de vos projets." }
       ] },
     ppt: { title: "Création PPT", tagline: "Donnez de l'impact à vos idées.", items: ["Rapports professionnels", "Pitchs et levée de fonds", "Lancements de produits", "Formation"], processTitle: "Processus", process: ["Brief", "Validation du plan", "Première maquette", "Révisions et livraison"], deliverTitle: "Livraison", deliver: "Fichier source modifiable, PDF et version image." },
     miniapp: { title: "Développement de mini-programmes", tagline: "Des mini-programmes WeChat conçus pour votre activité.", items: ["Mini-programmes e-commerce", "Outils de réservation", "Fonctions sur mesure", "Intégration WeChat"], processTitle: "Processus", process: ["Analyse des besoins", "Prototype et design", "Développement", "Tests et lancement"], deliverTitle: "Livraison", deliver: "Code source, version d'essai et assistance au lancement." },
@@ -159,10 +159,10 @@ window.I18N = {
     services: { title: "Unsere Leistungen", subtitle: "Professionelle, schnelle und zuverlässige digitale Dienste für Privatpersonen und Unternehmen.",
       items: [
         { icon: "📊", title: "PPT-Erstellung", desc: "Berichte, Angebote, Pitch-Decks und Schulungen mit sauberem, professionellem Layout." },
-        { icon: "📱", title: "Mini-Programme", desc: "WeChat-Mini-Programme, zugeschnitten auf Ihr Geschäft, vom Konzept bis zum Start." },
+        { icon: "📱", title: "Mini-Programme", desc: "Professionelle Mini-Programme nach Maß, von der Anforderung bis zum Start." },
         { icon: "🌐", title: "Webdesign", desc: "Unternehmenswebsites, Landingpages und responsives Design, bereit zur Veröffentlichung." },
-        { icon: "🛒", title: "Großhandel", desc: "Ware direkt ab Werk, Großhandelsversorgung und Dropshipping." },
-        { icon: "🤖", title: "Intelligenter Empfang", desc: "24/7 automatische Antworten zur Lead-Generierung." }
+        { icon: "🛒", title: "Großhandel", desc: "Qualitätsware direkt ab Werk, Großhandelsversorgung." },
+        { icon: "🤖", title: "Intelligenter Empfang", desc: "Willkommen zum Geschäftsgespräch." }
       ] },
     ppt: { title: "PPT-Erstellung", tagline: "Machen Sie Ihre Ideen überzeugend.", items: ["Geschäftsberichte", "Pitch-Decks und Finanzierung", "Produktlaunches", "Schulungen"], processTitle: "Ablauf", process: ["Briefing", "Gliederung bestätigen", "Erster Entwurf", "Überarbeitung und Lieferung"], deliverTitle: "Lieferung", deliver: "Bearbeitbare Quelldatei, PDF und Bildversion." },
     miniapp: { title: "Mini-Programm-Entwicklung", tagline: "WeChat-Mini-Programme für Ihr Geschäft.", items: ["E-Commerce-Mini-Programme", "Buchungs- und Service-Tools", "Individuelle Funktionen", "WeChat-Integration"], processTitle: "Ablauf", process: ["Anforderungsanalyse", "Prototyp und Design", "Entwicklung", "Test und Start"], deliverTitle: "Lieferung", deliver: "Quellcode, Testversion und Start-Unterstützung." },
@@ -188,10 +188,10 @@ window.I18N = {
     services: { title: "Nuestros servicios", subtitle: "Servicios digitales profesionales, rápidos y confiables para personas y empresas.",
       items: [
         { icon: "📊", title: "PPT", desc: "Informes, propuestas, pitch decks y capacitaciones con un diseño limpio y profesional." },
-        { icon: "📱", title: "Mini programas", desc: "Mini programas de WeChat a medida, del concepto al lanzamiento." },
+        { icon: "📱", title: "Mini programas", desc: "Mini programas profesionales a medida, de los requisitos al lanzamiento." },
         { icon: "🌐", title: "Diseño web", desc: "Sitios corporativos, landing pages y diseño responsive, listos para publicar." },
-        { icon: "🛒", title: "Mayoreo", desc: "Productos directos de fábrica, suministro al por mayor y dropshipping." },
-        { icon: "🤖", title: "Recepción inteligente", desc: "Respuestas automáticas 24/7 para captar clientes." }
+        { icon: "🛒", title: "Mayoreo", desc: "Productos de calidad directos de fábrica, suministro al por mayor." },
+        { icon: "🤖", title: "Recepción inteligente", desc: "Bienvenido a conversar con nosotros." }
       ] },
     ppt: { title: "Presentaciones PPT", tagline: "Haz que tus ideas impacten.", items: ["Informes de negocio", "Pitch decks y financiación", "Lanzamientos de producto", "Capacitación"], processTitle: "Proceso", process: ["Briefing", "Confirmación del esquema", "Primer borrador", "Revisiones y entrega"], deliverTitle: "Entrega", deliver: "Archivo fuente editable, PDF y versión de imagen." },
     miniapp: { title: "Desarrollo de mini programas", tagline: "Mini programas de WeChat hechos para tu negocio.", items: ["Mini programas de ecommerce", "Herramientas de reserva", "Funciones a medida", "Integración con WeChat"], processTitle: "Proceso", process: ["Análisis de requisitos", "Prototipo y diseño", "Desarrollo", "Pruebas y lanzamiento"], deliverTitle: "Entrega", deliver: "Código fuente, versión de prueba y asistencia de lanzamiento." },
@@ -217,10 +217,10 @@ window.I18N = {
     services: { title: "Nossos serviços", subtitle: "Serviços digitais profissionais, rápidos e confiáveis para pessoas e empresas.",
       items: [
         { icon: "📊", title: "Apresentações PPT", desc: "Relatórios, propostas, pitch decks e treinamentos com layout limpo e profissional." },
-        { icon: "📱", title: "Mini apps", desc: "Mini apps do WeChat sob medida, do conceito ao lançamento." },
+        { icon: "📱", title: "Mini apps", desc: "Mini apps profissionais sob medida, dos requisitos ao lançamento." },
         { icon: "🌐", title: "Web design", desc: "Sites corporativos, landing pages e design responsivo, prontos para publicar." },
-        { icon: "🛒", title: "Atacado", desc: "Produtos direto da fábrica, fornecimento no atacado e dropshipping." },
-        { icon: "🤖", title: "Recepção inteligente", desc: "Respostas automáticas 24/7 para captar clientes." }
+        { icon: "🛒", title: "Atacado", desc: "Produtos de qualidade direto da fábrica, fornecimento no atacado." },
+        { icon: "🤖", title: "Recepção inteligente", desc: "Bem-vindo para conversar conosco." }
       ] },
     ppt: { title: "Apresentações PPT", tagline: "Dê impacto às suas ideias.", items: ["Relatórios de negócios", "Pitch decks e captação", "Lançamentos de produtos", "Treinamentos"], processTitle: "Processo", process: ["Briefing", "Confirmação do roteiro", "Primeiro rascunho", "Revisões e entrega"], deliverTitle: "Entrega", deliver: "Arquivo fonte editável, PDF e versão em imagem." },
     miniapp: { title: "Desenvolvimento de mini apps", tagline: "Mini apps do WeChat feitos para o seu negócio.", items: ["Mini apps de e-commerce", "Ferramentas de reserva", "Funções personalizadas", "Integração com WeChat"], processTitle: "Processo", process: ["Análise de requisitos", "Protótipo e design", "Desenvolvimento", "Testes e lançamento"], deliverTitle: "Entrega", deliver: "Código-fonte, versão de teste e suporte ao lançamento." },
@@ -246,10 +246,10 @@ window.I18N = {
     services: { title: "Наши услуги", subtitle: "Профессиональные, быстрые и надёжные цифровые услуги для частных лиц и бизнеса.",
       items: [
         { icon: "📊", title: "Презентации PPT", desc: "Отчёты, предложения, питч-деки и обучение с аккуратным профессиональным дизайном." },
-        { icon: "📱", title: "Мини-приложения", desc: "Мини-приложения WeChat под ваш бизнес — от идеи до запуска." },
+        { icon: "📱", title: "Мини-приложения", desc: "Профессиональные мини-приложения под ключ — от требований до запуска." },
         { icon: "🌐", title: "Веб-дизайн", desc: "Корпоративные сайты, лендинги и адаптивный дизайн, готовые к публикации." },
-        { icon: "🛒", title: "Опт", desc: "Товары напрямую с фабрики, оптовые поставки и дропшиппинг." },
-        { icon: "🤖", title: "Умная приёмная", desc: "Автоответы 24/7 для сбора заявок." }
+        { icon: "🛒", title: "Опт", desc: "Качественные товары напрямую с фабрики, оптовые поставки." },
+        { icon: "🤖", title: "Умная приёмная", desc: "Приглашаем на переговоры." }
       ] },
     ppt: { title: "Презентации PPT", tagline: "Сделайте ваши идеи убедительными.", items: ["Деловые отчёты", "Питч-деки и фандрайзинг", "Запуски продуктов", "Обучение"], processTitle: "Процесс", process: ["Бриф", "Утверждение структуры", "Первый черновик", "Правки и сдача"], deliverTitle: "Сдача", deliver: "Редактируемый исходник, PDF и версия в картинках." },
     miniapp: { title: "Разработка мини-приложений", tagline: "Мини-приложения WeChat для вашего бизнеса.", items: ["Мини-приложения для торговли", "Инструменты бронирования", "Индивидуальные функции", "Интеграция с WeChat"], processTitle: "Процесс", process: ["Анализ требований", "Прототип и дизайн", "Разработка", "Тестирование и запуск"], deliverTitle: "Сдача", deliver: "Исходный код, тестовая версия и помощь с запуском." },
@@ -275,10 +275,10 @@ window.I18N = {
     services: { title: "خدماتنا", subtitle: "خدمات رقمية احترافية وسريعة وموثوقة للأفراد والشركات.",
       items: [
         { icon: "📊", title: "عروض PPT", desc: "تقارير وعروض ومقترحات تمويل وتدريب بتصميم احترافي وأنيق." },
-        { icon: "📱", title: "البرامج المصغرة", desc: "برامج WeChat مصغرة مخصصة لعملك، من الفكرة إلى الإطلاق." },
+        { icon: "📱", title: "البرامج المصغرة", desc: "برامج مصغرة احترافية مخصصة، من المتطلبات إلى الإطلاق." },
         { icon: "🌐", title: "تصميم الويب", desc: "مواقع شركات وصفحات هبوط وتصميم متجاوب، جاهزة للنشر." },
-        { icon: "🛒", title: "البيع بالجملة", desc: "منتجات مباشرة من المصنع وتوريد جملة ودروب شيبينغ." },
-        { icon: "🤖", title: "استقبال ذكي", desc: "ردود تلقائية على مدار الساعة لالتقاط العملاء." }
+        { icon: "🛒", title: "البيع بالجملة", desc: "منتجات عالية الجودة مباشرة من المصنع وتوريد بالجملة." },
+        { icon: "🤖", title: "استقبال ذكي", desc: "مرحباً بكم للتفاوض معنا." }
       ] },
     ppt: { title: "عروض PPT", tagline: "اجعل أفكارك أكثر إقناعاً.", items: ["تقارير الأعمال", "عروض التمويل", "إطلاق المنتجات", "التدريب"], processTitle: "العملية", process: ["جمع المتطلبات", "تأكيد الهيكل", "المسودة الأولى", "المراجعات والتسليم"], deliverTitle: "التسليم", deliver: "ملف مصدري قابل للتعديل ونسخة PDF ونسخة صور." },
     miniapp: { title: "تطوير البرامج المصغرة", tagline: "برامج WeChat مصغرة مصممة لعملك.", items: ["برامج التجارة المصغرة", "أدوات الحجز", "ميزات مخصصة", "التكامل مع WeChat"], processTitle: "العملية", process: ["تحليل المتطلبات", "النموذج والتصميم", "التطوير", "الاختبار والإطلاق"], deliverTitle: "التسليم", deliver: "الكود المصدري ونسخة تجريبية ومساعدة الإطلاق." },
@@ -304,10 +304,10 @@ window.I18N = {
     services: { title: "हमारी सेवाएं", subtitle: "व्यक्तियों और व्यवसायों के लिए पेशेवर, तेज़ और भरोसेमंद डिजिटल सेवाएं।",
       items: [
         { icon: "📊", title: "PPT निर्माण", desc: "रिपोर्ट, प्रस्ताव, पिच डेक और प्रशिक्षण — साफ और पेशेवर डिज़ाइन के साथ।" },
-        { icon: "📱", title: "मिनी ऐप", desc: "आपके व्यवसाय के अनुसार WeChat मिनी ऐप, विचार से लॉन्च तक।" },
+        { icon: "📱", title: "मिनी ऐप", desc: "पेशेवर कस्टम मिनी ऐप, आवश्यकता से लॉन्च तक।" },
         { icon: "🌐", title: "वेब डिज़ाइन", desc: "कॉर्पोरेट साइट, लैंडिंग पेज और रिस्पॉन्सिव डिज़ाइन, प्रकाशन के लिए तैयार।" },
-        { icon: "🛒", title: "थोक", desc: "फैक्ट्री-डायरेक्ट सामान, थोक आपूर्ति और ड्रॉपशिपिंग।" },
-        { icon: "🤖", title: "स्मार्ट रिसेप्शन", desc: "24/7 ऑटो-रिप्लाई से लीड पकड़ें और सवालों के जवाब दें।" }
+        { icon: "🛒", title: "थोक", desc: "फैक्ट्री-डायरेक्ट अच्छा माल, थोक आपूर्ति।" },
+        { icon: "🤖", title: "स्मार्ट रिसेप्शन", desc: "बातचीत के लिए आपका स्वागत है।" }
       ] },
     ppt: { title: "PPT निर्माण", tagline: "अपने विचारों को प्रभावशाली बनाएं।", items: ["बिज़नेस रिपोर्ट", "पिच डेक और फंडिंग", "प्रोडक्ट लॉन्च", "प्रशिक्षण"], processTitle: "प्रक्रिया", process: ["आवश्यकता ब्रीफ़", "रूपरेखा की पुष्टि", "पहला ड्राफ्ट", "संशोधन और डिलीवरी"], deliverTitle: "डिलीवरी", deliver: "एडिटेबल सोर्स फ़ाइल, PDF और इमेज वर्शन।" },
     miniapp: { title: "मिनी ऐप विकास", tagline: "आपके व्यवसाय के लिए WeChat मिनी ऐप।", items: ["ई-कॉमर्स मिनी ऐप", "बुकिंग और सेवा टूल", "कस्टम फ़ीचर", "WeChat इंटीग्रेशन"], processTitle: "प्रक्रिया", process: ["आवश्यकता विश्लेषण", "प्रोटोटाइप और डिज़ाइन", "विकास", "टेस्ट और लॉन्च"], deliverTitle: "डिलीवरी", deliver: "सोर्स कोड, ट्रायल वर्शन और लॉन्च सहायता।" },
@@ -333,10 +333,10 @@ window.I18N = {
     services: { title: "Hizmetlerimiz", subtitle: "Bireyler ve işletmeler için profesyonel, hızlı ve güvenilir dijital hizmetler.",
       items: [
         { icon: "📊", title: "PPT Hazırlama", desc: "Raporlar, teklifler, sunum desteleri ve eğitimler — temiz ve profesyonel tasarımla." },
-        { icon: "📱", title: "Mini Uygulamalar", desc: "İşinize özel WeChat mini uygulamaları, fikirden yayına." },
+        { icon: "📱", title: "Mini Uygulamalar", desc: "Profesyonel özel mini uygulamalar, gereksinimden yayına." },
         { icon: "🌐", title: "Web Tasarımı", desc: "Kurumsal siteler, landing sayfaları ve duyarlı tasarım, yayına hazır." },
-        { icon: "🛒", title: "Toptan", desc: "Fabrikadan doğrudan ürünler, toptan tedarik ve dropshipping." },
-        { icon: "🤖", title: "Akıllı Karşılama", desc: "7/24 otomatik yanıtlarla müşteri yakalayın." }
+        { icon: "🛒", title: "Toptan", desc: "Fabrikadan doğrudan kaliteli ürünler, toptan tedarik." },
+        { icon: "🤖", title: "Akıllı Karşılama", desc: "Görüşmeye hoş geldiniz." }
       ] },
     ppt: { title: "PPT Hazırlama", tagline: "Fikirlerinizi etkili hale getirin.", items: ["İş raporları", "Sunum desteleri ve fonlama", "Ürün lansmanları", "Eğitimler"], processTitle: "Süreç", process: ["İhtiyaç brifi", "İçerik onayı", "İlk taslak", "Revizyonlar ve teslim"], deliverTitle: "Teslim", deliver: "Düzenlenebilir kaynak dosya, PDF ve görsel sürüm." },
     miniapp: { title: "Mini Uygulama Geliştirme", tagline: "İşiniz için WeChat mini uygulamaları.", items: ["E-ticaret mini uygulamaları", "Rezervasyon araçları", "Özel özellikler", "WeChat entegrasyonu"], processTitle: "Süreç", process: ["İhtiyaç analizi", "Prototip ve tasarım", "Geliştirme", "Test ve yayın"], deliverTitle: "Teslim", deliver: "Kaynak kod, deneme sürümü ve yayın desteği." },
@@ -362,10 +362,10 @@ window.I18N = {
     services: { title: "Dịch vụ của chúng tôi", subtitle: "Dịch vụ số chuyên nghiệp, nhanh chóng và đáng tin cậy cho cá nhân và doanh nghiệp.",
       items: [
         { icon: "📊", title: "Làm PPT", desc: "Báo cáo, đề xuất, pitch deck và đào tạo với bố cục sạch sẽ, chuyên nghiệp." },
-        { icon: "📱", title: "Mini app", desc: "Mini app WeChat theo nhu cầu doanh nghiệp, từ ý tưởng đến ra mắt." },
+        { icon: "📱", title: "Mini app", desc: "Mini app tùy chỉnh chuyên nghiệp, từ yêu cầu đến ra mắt." },
         { icon: "🌐", title: "Thiết kế web", desc: "Website doanh nghiệp, landing page và thiết kế responsive, sẵn sàng đăng." },
-        { icon: "🛒", title: "Bán buôn", desc: "Hàng tận xưởng, cung ứng bán buôn và dropshipping." },
-        { icon: "🤖", title: "Tiếp tân thông minh", desc: "Tự động trả lời 24/7 để chốt khách hàng." }
+        { icon: "🛒", title: "Bán buôn", desc: "Hàng tốt tận xưởng, cung ứng bán buôn." },
+        { icon: "🤖", title: "Tiếp tân thông minh", desc: "Chào mừng bạn đến trao đổi." }
       ] },
     ppt: { title: "Làm PPT", tagline: "Biến ý tưởng thành sức thuyết phục.", items: ["Báo cáo kinh doanh", "Pitch deck và gọi vốn", "Ra mắt sản phẩm", "Đào tạo"], processTitle: "Quy trình", process: ["Tiếp nhận yêu cầu", "Chốt dàn bài", "Thiết kế bản nháp", "Chỉnh sửa và bàn giao"], deliverTitle: "Bàn giao", deliver: "File nguồn chỉnh sửa được, bản PDF và bản ảnh." },
     miniapp: { title: "Phát triển mini app", tagline: "Mini app WeChat dành riêng cho doanh nghiệp của bạn.", items: ["Mini app thương mại điện tử", "Công cụ đặt lịch", "Tính năng tùy chỉnh", "Tích hợp WeChat"], processTitle: "Quy trình", process: ["Phân tích yêu cầu", "Nguyên mẫu và thiết kế", "Phát triển", "Kiểm thử và ra mắt"], deliverTitle: "Bàn giao", deliver: "Mã nguồn, bản dùng thử và hỗ trợ ra mắt." },
@@ -391,10 +391,10 @@ window.I18N = {
     services: { title: "บริการของเรา", subtitle: "บริการดิจิทัลมืออาชีพ รวดเร็ว และเชื่อถือได้สำหรับบุคคลและธุรกิจ",
       items: [
         { icon: "📊", title: "ทำ PPT", desc: "รายงาน ข้อเสนอ พิชเด็ค และอบรม ด้วยดีไซน์สะอาดและเป็นมืออาชีพ" },
-        { icon: "📱", title: "มินิแอป", desc: "มินิแอป WeChat ตามธุรกิจของคุณ ตั้งแต่ไอเดียจนเปิดตัว" },
+        { icon: "📱", title: "มินิแอป", desc: "มินิแอปแบบกำหนดเองระดับมืออาชีพ ตั้งแต่ความต้องการจนถึงเปิดตัว" },
         { icon: "🌐", title: "ออกแบบเว็บ", desc: "เว็บองค์กร แลนดิงเพจ และดีไซน์ responsive พร้อมเผยแพร่" },
-        { icon: "🛒", title: "ขายส่ง", desc: "สินค้าตรงจากโรงงาน ขายส่ง และดรอปชิปปิง" },
-        { icon: "🤖", title: "แผนกต้อนรับอัจฉริยะ", desc: "ตอบอัตโนมัติ 24 ชั่วโมง เพื่อเก็บลูกค้า" }
+        { icon: "🛒", title: "ขายส่ง", desc: "สินค้าดีตรงจากโรงงาน ขายส่ง" },
+        { icon: "🤖", title: "แผนกต้อนรับอัจฉริยะ", desc: "ยินดีต้อนรับสู่การเจรจา" }
       ] },
     ppt: { title: "ทำ PPT", tagline: "ทำให้ไอเดียของคุณน่าเชื่อถือ", items: ["รายงานธุรกิจ", "พิชเด็คและระดมทุน", "เปิดตัวสินค้า", "อบรม"], processTitle: "ขั้นตอน", process: ["รับความต้องการ", "ยืนยันโครงสร้าง", "ออกแบบฉบับร่าง", "แก้ไขและส่งมอบ"], deliverTitle: "ส่งมอบ", deliver: "ไฟล์ต้นฉบับแก้ไขได้, PDF และเวอร์ชันภาพ" },
     miniapp: { title: "พัฒนามินิแอป", tagline: "มินิแอป WeChat สำหรับธุรกิจของคุณ", items: ["มินิแอปอีคอมเมิร์ซ", "เครื่องมือจอง", "ฟีเจอร์ตามต้องการ", "เชื่อม WeChat"], processTitle: "ขั้นตอน", process: ["วิเคราะห์ความต้องการ", "ต้นแบบและดีไซน์", "พัฒนา", "ทดสอบและเปิดตัว"], deliverTitle: "ส่งมอบ", deliver: "ซอร์สโค้ด เวอร์ชันทดลอง และช่วยเปิดตัว" },
@@ -420,10 +420,10 @@ window.I18N = {
     services: { title: "Layanan kami", subtitle: "Layanan digital yang profesional, cepat, dan andal untuk individu dan bisnis.",
       items: [
         { icon: "📊", title: "Pembuatan PPT", desc: "Laporan, proposal, pitch deck, dan pelatihan dengan tata letak yang rapi dan profesional." },
-        { icon: "📱", title: "Mini app", desc: "Mini app WeChat yang disesuaikan dengan bisnis Anda, dari konsep hingga peluncuran." },
+        { icon: "📱", title: "Mini app", desc: "Mini app kustom profesional, dari kebutuhan hingga peluncuran." },
         { icon: "🌐", title: "Desain web", desc: "Situs perusahaan, landing page, dan desain responsif, siap dipublikasikan." },
-        { icon: "🛒", title: "Grosir", desc: "Barang langsung dari pabrik, pasokan grosir, dan dropshipping." },
-        { icon: "🤖", title: "Penerimaan pintar", desc: "Balasan otomatis 24/7 untuk menangkap calon pelanggan." }
+        { icon: "🛒", title: "Grosir", desc: "Barang berkualitas langsung dari pabrik, pasokan grosir." },
+        { icon: "🤖", title: "Penerimaan pintar", desc: "Selamat datang untuk berdiskusi." }
       ] },
     ppt: { title: "Pembuatan PPT", tagline: "Buat ide Anda lebih meyakinkan.", items: ["Laporan bisnis", "Pitch deck dan pendanaan", "Peluncuran produk", "Pelatihan"], processTitle: "Proses", process: ["Brief kebutuhan", "Konfirmasi kerangka", "Desain draf pertama", "Revisi dan serah terima"], deliverTitle: "Serah terima", deliver: "File sumber yang dapat diedit, PDF, dan versi gambar." },
     miniapp: { title: "Pengembangan mini app", tagline: "Mini app WeChat untuk bisnis Anda.", items: ["Mini app e-commerce", "Alat pemesanan", "Fitur kustom", "Integrasi WeChat"], processTitle: "Proses", process: ["Analisis kebutuhan", "Prototipe dan desain", "Pengembangan", "Uji dan peluncuran"], deliverTitle: "Serah terima", deliver: "Kode sumber, versi uji coba, dan bantuan peluncuran." },
