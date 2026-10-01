@@ -179,6 +179,34 @@ body {
 .wholesale-product-price { font-size: 13.5px; font-weight: 700; color: var(--brand); white-space: nowrap; }
 .wholesale-note { text-align: center; color: var(--muted); margin: 22px 0 4px; font-size: 14px; }
 
+.wholesale-product.product-click { cursor: pointer; }
+.wholesale-product.product-click:hover { border-color: var(--brand); }
+
+/* ---------- 商品详情弹窗 ---------- */
+.product-modal-overlay {
+  position: fixed; inset: 0; z-index: 100;
+  background: rgba(15, 17, 26, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.product-modal {
+  position: relative; background: var(--surface); border-radius: 18px;
+  max-width: 440px; width: 100%; padding: 26px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25); text-align: center;
+}
+.product-modal-close {
+  position: absolute; top: 12px; inset-inline-end: 12px;
+  border: none; background: transparent; font-size: 20px; cursor: pointer; color: var(--muted);
+}
+.product-modal-img { font-size: 48px; margin-bottom: 10px; }
+.product-modal-stock { display: inline-block; padding: 4px 12px; border-radius: 999px; background: #ecfdf5; color: #15803d; font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+.product-modal-name { font-size: 17px; margin: 0 0 8px; line-height: 1.4; }
+.product-modal-meta { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+.product-modal-price { font-size: 26px; font-weight: 800; color: var(--brand); margin-bottom: 6px; }
+.product-modal-self { font-size: 14px; font-weight: 600; color: var(--brand); margin-bottom: 12px; }
+.product-modal-desc { color: var(--ink); font-size: 14px; margin: 0 0 10px; }
+.product-modal-source { color: var(--muted); font-size: 12.5px; margin: 0 0 16px; }
+
 /* ---------- 联系 ---------- */
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
 .contact-info { display: flex; flex-direction: column; gap: 16px; }
