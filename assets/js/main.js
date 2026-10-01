@@ -353,37 +353,21 @@ function buildWholesale(t) {
 
   var cats = el("div", { class: "wholesale-cats" });
   t.wholesale.categories.forEach(function (cat) {
-    var label = typeof cat === "string" ? cat : ((cat.icon ? cat.icon + " " : "") + (cat.name || ""));
-    cats.appendChild(el("div", { class: "wholesale-cat" }, label));
+    var details = el("details", { class: "wholesale-cat" });
+    details.appendChild(el("summary", {}, (cat.icon ? cat.icon + " " : "") + (cat.name || "")));
+    if (cat.items && cat.items.length) {
+      var list = el("div", { class: "wholesale-products" });
+      cat.items.forEach(function (it) {
+        var card = el("div", { class: "wholesale-product" });
+        card.appendChild(el("div", { class: "wholesale-product-name" }, it.name));
+        card.appendChild(el("div", { class: "wholesale-product-price" }, it.price));
+        list.appendChild(card);
+      });
+      details.appendChild(list);
+    }
+    cats.appendChild(details);
   });
   c.appendChild(cats);
-
-  var auto = el("div", { class: "wholesale-panel" });
-  auto.appendChild(el("h3", { class: "wholesale-h3" }, t.wholesale.automationTitle));
-  var autoList = el("ul", { class: "check-list" });
-  t.wholesale.automation.forEach(function (s) { autoList.appendChild(el("li", {}, "🤖 " + s)); });
-  auto.appendChild(autoList);
-  c.appendChild(auto);
-
-  var pricing = el("div", { class: "pricing-banner" });
-  pricing.appendChild(el("h3", { class: "wholesale-h3" }, t.wholesale.pricingTitle));
-  t.wholesale.pricing.forEach(function (s) { pricing.appendChild(el("p", {}, s)); });
-  c.appendChild(pricing);
-
-  var qc = el("div", { class: "wholesale-qc" });
-  var q = el("div", { class: "wholesale-panel" });
-  q.appendChild(el("h3", { class: "wholesale-h3" }, t.wholesale.qualityTitle));
-  var ql = el("ul", { class: "check-list" });
-  t.wholesale.quality.forEach(function (s) { ql.appendChild(el("li", {}, "✅ " + s)); });
-  q.appendChild(ql);
-  var cp = el("div", { class: "wholesale-panel" });
-  cp.appendChild(el("h3", { class: "wholesale-h3" }, t.wholesale.complianceTitle));
-  var cl = el("ul", { class: "check-list" });
-  t.wholesale.compliance.forEach(function (s) { cl.appendChild(el("li", {}, "🛡️ " + s)); });
-  cp.appendChild(cl);
-  qc.appendChild(q);
-  qc.appendChild(cp);
-  c.appendChild(qc);
 
   c.appendChild(el("p", { class: "wholesale-note" }, t.wholesale.note));
   var cta = el("a", { class: "btn btn-primary", href: "#contact" }, t.wholesale.cta);
@@ -475,9 +459,11 @@ function render() {
       if (!t[k].advantages) t[k].advantages = en[k].advantages;
     });
     if (t.wholesale && en.wholesale) {
-      ["automationTitle", "automation", "pricingTitle", "pricing", "qualityTitle", "quality", "complianceTitle", "compliance"].forEach(function (f) {
-        if (!t.wholesale[f]) t.wholesale[f] = en.wholesale[f];
-      });
+      if (!t.wholesale.categories || (t.wholesale.categories.length && typeof t.wholesale.categories[0] === "string")) {
+        t.wholesale.categories = en.wholesale.categories;
+      }
+      if (!t.wholesale.note) t.wholesale.note = en.wholesale.note;
+      delete t.wholesale.subtitle;
     }
   }
 

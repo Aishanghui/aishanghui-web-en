@@ -167,15 +167,17 @@ body {
 
 /* ---------- 批发超市 ---------- */
 .wholesale { background: #fff; border-top: 1px solid var(--line); }
-.wholesale-cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 22px; }
-.wholesale-cat { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 16px 12px; text-align: center; font-weight: 600; font-size: 14px; }
-.wholesale-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: var(--shadow); }
-.wholesale-h3 { font-size: 16px; margin: 0 0 12px; }
-.pricing-banner { background: linear-gradient(135deg, #eef0ff, #faf5ff); border: 1px solid var(--line); border-radius: 14px; padding: 22px; margin: 22px 0; text-align: center; }
-.pricing-banner h3 { margin: 0 0 8px; }
-.pricing-banner p { margin: 4px 0; font-weight: 600; color: var(--brand); }
-.wholesale-qc { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 22px 0; }
-.wholesale-note { text-align: center; color: var(--muted); margin: 22px 0 4px; }
+.wholesale-cats { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-bottom: 22px; }
+.wholesale-cat { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.wholesale-cat summary { padding: 16px 12px; text-align: center; font-weight: 600; font-size: 14px; cursor: pointer; list-style: none; }
+.wholesale-cat summary::-webkit-details-marker { display: none; }
+.wholesale-cat summary::after { content: " ▾"; color: var(--brand); }
+.wholesale-cat[open] summary::after { content: " ▴"; }
+.wholesale-products { padding: 0 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.wholesale-product { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.wholesale-product-name { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+.wholesale-product-price { font-size: 13.5px; font-weight: 700; color: var(--brand); white-space: nowrap; }
+.wholesale-note { text-align: center; color: var(--muted); margin: 22px 0 4px; font-size: 14px; }
 
 /* ---------- 联系 ---------- */
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: start; }
@@ -229,7 +231,7 @@ body {
 /* ---------- 响应式 ---------- */
 @media (max-width: 860px) {
   .hero-title { font-size: 32px; }
-  .detail-grid, .contact-grid, .about-split, .wholesale-qc { grid-template-columns: 1fr; gap: 24px; }
+  .detail-grid, .contact-grid, .about-split { grid-template-columns: 1fr; gap: 24px; }
   .about-list { grid-template-columns: 1fr; }
   .nav {
     display: none; position: absolute; top: 64px; inset-inline: 0;
