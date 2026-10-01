@@ -221,13 +221,6 @@ function buildHero(t) {
   inner.appendChild(el("span", { class: "hero-badge" }, t.hero.badge));
   inner.appendChild(el("h1", { class: "hero-title" }, t.hero.title));
   inner.appendChild(el("p", { class: "hero-sub" }, t.hero.subtitle));
-  var btns = el("div", { class: "hero-btns" });
-  var b1 = el("a", { class: "btn btn-primary", href: "#contact" }, t.hero.cta1);
-  var b2 = el("a", { class: "btn btn-ghost", href: "#services" }, t.hero.cta2);
-  b1.addEventListener("click", function (e) { e.preventDefault(); showView("contact"); });
-  b2.addEventListener("click", function (e) { e.preventDefault(); scrollToId("services"); });
-  btns.appendChild(b1); btns.appendChild(b2);
-  inner.appendChild(btns);
   c.appendChild(inner);
   return section("top", "hero", c);
 }
@@ -415,7 +408,6 @@ function buildContact(t) {
     status.textContent = t.contact.form.success;
     status.classList.add("show");
     form.reset();
-    setTimeout(function () { status.classList.remove("show"); }, 4000);
   });
 
   grid.appendChild(info);
