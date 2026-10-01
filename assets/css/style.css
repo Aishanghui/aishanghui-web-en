@@ -190,7 +190,7 @@ body {
 .field { border: 1px solid var(--line); border-radius: 11px; padding: 12px 14px; font-size: 14.5px; outline: none; font-family: inherit; resize: vertical; }
 .field:focus { border-color: var(--brand); }
 .form-status { display: none; color: #15803d; font-size: 14px; }
-.form-status.show { display: block; }
+.form-status.show { display: block; background: #ecfdf5; border: 1px solid #86efac; padding: 12px 14px; border-radius: 10px; }
 
 /* ---------- 页脚 ---------- */
 .footer { background: #14161f; color: #a6aac0; padding: 28px 0; text-align: center; font-size: 14px; }
