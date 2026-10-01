@@ -354,7 +354,11 @@ function buildWholesale(t) {
       var list = el("div", { class: "wholesale-products" });
       cat.items.forEach(function (it) {
         var card = el("div", { class: "wholesale-product" });
-        card.appendChild(el("div", { class: "wholesale-product-name" }, it.name));
+        if (it.link) {
+          card.appendChild(el("a", { class: "wholesale-product-name", href: it.link, target: "_blank", rel: "noopener" }, it.name));
+        } else {
+          card.appendChild(el("div", { class: "wholesale-product-name" }, it.name));
+        }
         card.appendChild(el("div", { class: "wholesale-product-price" }, it.price));
         list.appendChild(card);
       });
