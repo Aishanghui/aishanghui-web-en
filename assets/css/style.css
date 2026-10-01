@@ -167,11 +167,14 @@ body {
 
 /* ---------- 批发超市 ---------- */
 .wholesale { background: #fff; border-top: 1px solid var(--line); }
-.wholesale-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; }
-.wholesale-item {
-  background: var(--bg); border: 1px solid var(--line); border-radius: 12px;
-  padding: 18px; text-align: center; font-weight: 600; font-size: 14.5px;
-}
+.wholesale-cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 22px; }
+.wholesale-cat { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 16px 12px; text-align: center; font-weight: 600; font-size: 14px; }
+.wholesale-panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: var(--shadow); }
+.wholesale-h3 { font-size: 16px; margin: 0 0 12px; }
+.pricing-banner { background: linear-gradient(135deg, #eef0ff, #faf5ff); border: 1px solid var(--line); border-radius: 14px; padding: 22px; margin: 22px 0; text-align: center; }
+.pricing-banner h3 { margin: 0 0 8px; }
+.pricing-banner p { margin: 4px 0; font-weight: 600; color: var(--brand); }
+.wholesale-qc { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 22px 0; }
 .wholesale-note { text-align: center; color: var(--muted); margin: 22px 0 4px; }
 
 /* ---------- 联系 ---------- */
@@ -198,11 +201,11 @@ body {
 
 /* ---------- 关于我们 ---------- */
 .about { background: #fff; border-bottom: 1px solid var(--line); }
-.about-intro { max-width: 760px; margin: 0 auto 30px; color: var(--muted); font-size: 16px; }
-.about-intro p { margin: 0 0 12px; }
+.about-split { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 880px; margin: 0 auto 34px; align-items: start; }
+.about-col p { margin: 0 0 12px; color: var(--muted); font-size: 15.5px; }
 .about-block { max-width: 880px; margin: 0 auto 34px; }
 .about-h3 { font-size: 18px; margin: 0 0 14px; text-align: center; }
-.about-list { max-width: 680px; margin: 0 auto; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.about-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .about-list li { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; font-weight: 500; }
 .strength-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
 .strength-card { background: var(--bg); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
@@ -221,13 +224,13 @@ body {
 
 /* ---------- 简洁首页 + 层级详情 ---------- */
 .detail-page { background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.backbar { padding: 20px 0 0; }
 .detail-body { margin-top: 8px; }
 
 /* ---------- 响应式 ---------- */
 @media (max-width: 860px) {
   .hero-title { font-size: 32px; }
-  .detail-grid, .contact-grid { grid-template-columns: 1fr; gap: 24px; }
+  .detail-grid, .contact-grid, .about-split, .wholesale-qc { grid-template-columns: 1fr; gap: 24px; }
+  .about-list { grid-template-columns: 1fr; }
   .nav {
     display: none; position: absolute; top: 64px; inset-inline: 0;
     flex-direction: column; background: #fff; border-bottom: 1px solid var(--line); padding: 10px 20px 16px;

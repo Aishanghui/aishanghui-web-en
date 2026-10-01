@@ -47,7 +47,14 @@ function detectLang() {
 }
 
 var currentLang = detectLang();
-var view = "home";
+var VIEWS = ["home", "about", "ppt", "miniapp", "web", "reception", "wholesale", "contact"];
+
+function currentViewFromHash() {
+  var h = location.hash.replace(/^#\/?/, "");
+  return VIEWS.indexOf(h) >= 0 ? h : "home";
+}
+
+var view = currentViewFromHash();
 
 /* ---------- 导航平滑滚动 ---------- */
 function scrollToId(id) {
@@ -56,9 +63,18 @@ function scrollToId(id) {
 }
 
 function showView(id) {
+  if (VIEWS.indexOf(id) < 0) id = "home";
   view = id;
+  if (location.hash !== "#" + id) {
+    try { history.pushState(null, "", "#" + id); } catch (e) { location.hash = "#" + id; }
+  }
   render();
 }
+
+window.addEventListener("popstate", function () {
+  view = currentViewFromHash();
+  render();
+});
 
 /* ---------- 语言切换下拉 ---------- */
 function buildLangSwitcher() {
@@ -238,16 +254,21 @@ function buildAbout(t) {
   var c = container();
   c.appendChild(sectionHead(t.about, null));
 
-  var intro = el("div", { class: "about-intro" });
-  t.about.intro.forEach(function (p) { intro.appendChild(el("p", {}, p)); });
-  c.appendChild(intro);
+  var split = el("div", { class: "about-split" });
 
-  var scopeBlock = el("div", { class: "about-block" });
-  scopeBlock.appendChild(el("h3", { class: "about-h3" }, t.about.scopeTitle));
+  var introCol = el("div", { class: "about-col" });
+  introCol.appendChild(el("h3", { class: "about-h3" }, t.about.title));
+  t.about.intro.forEach(function (p) { introCol.appendChild(el("p", {}, p)); });
+  split.appendChild(introCol);
+
+  var scopeCol = el("div", { class: "about-col" });
+  scopeCol.appendChild(el("h3", { class: "about-h3" }, t.about.scopeTitle));
   var scopeList = el("ul", { class: "about-list" });
   t.about.scope.forEach(function (s) { scopeList.appendChild(el("li", {}, s)); });
-  scopeBlock.appendChild(scopeList);
-  c.appendChild(scopeBlock);
+  scopeCol.appendChild(scopeList);
+  split.appendChild(scopeCol);
+
+  c.appendChild(split);
 
   var sw = el("div", { class: "about-block" });
   sw.appendChild(el("h3", { class: "about-h3" }, t.about.strengthsTitle));
@@ -275,6 +296,18 @@ function buildDetail(id, t) {
   var list = el("ul", { class: "check-list" });
   t.items.forEach(function (it) { list.appendChild(el("li", {}, "✓ " + it)); });
   body.appendChild(list);
+
+  if (t.advantages && t.advantages.length) {
+    body.appendChild(el("h4", { class: "detail-sub" }, t.advantagesTitle));
+    var ag = el("div", { class: "strength-grid" });
+    t.advantages.forEach(function (a) {
+      var card = el("div", { class: "strength-card" });
+      card.appendChild(el("h4", {}, a.title));
+      card.appendChild(el("p", {}, a.desc));
+      ag.appendChild(card);
+    });
+    body.appendChild(ag);
+  }
 
   body.appendChild(el("h4", { class: "detail-sub" }, t.processTitle));
   var steps = el("ol", { class: "steps" });
@@ -317,14 +350,44 @@ function buildReception(t) {
 function buildWholesale(t) {
   var c = container();
   c.appendChild(sectionHead(t.wholesale, null));
-  var grid = el("div", { class: "wholesale-grid" });
+
+  var cats = el("div", { class: "wholesale-cats" });
   t.wholesale.categories.forEach(function (cat) {
-    grid.appendChild(el("div", { class: "wholesale-item" }, cat));
+    var label = typeof cat === "string" ? cat : ((cat.icon ? cat.icon + " " : "") + (cat.name || ""));
+    cats.appendChild(el("div", { class: "wholesale-cat" }, label));
   });
-  c.appendChild(grid);
+  c.appendChild(cats);
+
+  var auto = el("div", { class: "wholesale-panel" });
+  auto.appendChild(el("h3", { class: "wholesale-h3" }, t.wholesale.automationTitle));
+  var autoList = el("ul", { class: "check-list" });
+  t.wholesale.automation.forEach(function (s) { autoList.appendChild(el("li", {}, "🤖 " + s)); });
+  auto.appendChild(autoList);
+  c.appendChild(auto);
+
+  var pricing = el("div", { class: "pricing-banner" });
+  pricing.appendChild(el("h3", { class: "wholesale-h3" }, t.wholesale.pricingTitle));
+  t.wholesale.pricing.forEach(function (s) { pricing.appendChild(el("p", {}, s)); });
+  c.appendChild(pricing);
+
+  var qc = el("div", { class: "wholesale-qc" });
+  var q = el("div", { class: "wholesale-panel" });
+  q.appendChild(el("h3", { class: "wholesale-h3" }, t.wholesale.qualityTitle));
+  var ql = el("ul", { class: "check-list" });
+  t.wholesale.quality.forEach(function (s) { ql.appendChild(el("li", {}, "✅ " + s)); });
+  q.appendChild(ql);
+  var cp = el("div", { class: "wholesale-panel" });
+  cp.appendChild(el("h3", { class: "wholesale-h3" }, t.wholesale.complianceTitle));
+  var cl = el("ul", { class: "check-list" });
+  t.wholesale.compliance.forEach(function (s) { cl.appendChild(el("li", {}, "🛡️ " + s)); });
+  cp.appendChild(cl);
+  qc.appendChild(q);
+  qc.appendChild(cp);
+  c.appendChild(qc);
+
   c.appendChild(el("p", { class: "wholesale-note" }, t.wholesale.note));
   var cta = el("a", { class: "btn btn-primary", href: "#contact" }, t.wholesale.cta);
-  cta.addEventListener("click", function (e) { e.preventDefault(); scrollToId("contact"); });
+  cta.addEventListener("click", function (e) { e.preventDefault(); showView("contact"); });
   c.appendChild(el("div", { class: "center" }, cta));
   return section("wholesale", "wholesale", c);
 }
@@ -380,19 +443,8 @@ function buildFooter(t) {
   return el("footer", { class: "footer" }, el("div", { class: "container" }, t.footer.copyright));
 }
 
-function backBar(t) {
-  var wrap = el("div", { class: "backbar" });
-  var c = container();
-  var b = el("button", { class: "btn btn-ghost", type: "button" }, "← " + (t.back || "返回"));
-  b.addEventListener("click", function () { showView("home"); });
-  c.appendChild(b);
-  wrap.appendChild(c);
-  return wrap;
-}
-
 function buildModule(id, t) {
   var wrap = el("div", {});
-  wrap.appendChild(backBar(t));
   if (id === "about") wrap.appendChild(buildAbout(t));
   else if (id === "ppt" || id === "miniapp" || id === "web") wrap.appendChild(buildDetail(id, t[id]));
   else if (id === "reception") wrap.appendChild(buildReception(t));
@@ -419,7 +471,14 @@ function render() {
       if (!t[k].scopeTitle) t[k].scopeTitle = en[k].scopeTitle;
       if (!t[k].scope) t[k].scope = en[k].scope;
       if (!t[k].scopeNote) t[k].scopeNote = en[k].scopeNote;
+      if (!t[k].advantagesTitle) t[k].advantagesTitle = en[k].advantagesTitle;
+      if (!t[k].advantages) t[k].advantages = en[k].advantages;
     });
+    if (t.wholesale && en.wholesale) {
+      ["automationTitle", "automation", "pricingTitle", "pricing", "qualityTitle", "quality", "complianceTitle", "compliance"].forEach(function (f) {
+        if (!t.wholesale[f]) t.wholesale[f] = en.wholesale[f];
+      });
+    }
   }
 
   document.documentElement.lang = currentLang;
