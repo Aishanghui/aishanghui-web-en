@@ -287,8 +287,7 @@ function buildAbout(t) {
 
 function buildDetail(id, t) {
   var c = container();
-  c.appendChild(el("span", { class: "badge" }, t.title));
-  c.appendChild(el("h2", { class: "section-title" }, t.tagline));
+  c.appendChild(el("h2", { class: "section-title" }, t.title));
   if (t.desc) c.appendChild(el("p", { class: "detail-desc" }, t.desc));
 
   var body = el("div", { class: "detail-body" });
