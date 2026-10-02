@@ -288,3 +288,30 @@ body {
 .admin-price { width: 100px; }
 .admin-save, .admin-del { flex: none; }
 .admin-del { background: transparent; border: 1px solid var(--line); color: var(--muted); }
+
+/* ---------- 商品批发：类目卡片 + 类目商品页 + 图片画廊 ---------- */
+.wholesale-cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin: 8px 0 0; }
+.wholesale-cat-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 16px; text-align: center; text-decoration: none; color: var(--ink); cursor: pointer; transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+.wholesale-cat-card:hover { border-color: var(--brand); transform: translateY(-2px); box-shadow: var(--shadow); }
+.wholesale-cat-icon { font-size: 34px; line-height: 1; margin-bottom: 10px; }
+.wholesale-cat-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.wholesale-cat-count { font-size: 12.5px; color: var(--muted); }
+
+.wholesale-cat-products { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 8px; }
+.wholesale-product-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease; }
+.wholesale-product-card:hover { border-color: var(--brand); box-shadow: var(--shadow); }
+.wholesale-product-card .wholesale-product-body { padding: 12px 14px 14px; gap: 4px; }
+
+.product-gallery { position: relative; overflow: hidden; background: var(--bg); }
+.gallery-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.gallery-track::-webkit-scrollbar { display: none; }
+.gallery-slide { flex: 0 0 100%; scroll-snap-align: start; }
+.gallery-img { display: block; width: 100%; height: 190px; object-fit: cover; }
+.gallery-placeholder { height: 190px; display: flex; align-items: center; justify-content: center; font-size: 64px; background: var(--bg); color: var(--muted); }
+.gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(0, 0, 0, .45); color: #fff; font-size: 18px; line-height: 1; cursor: pointer; z-index: 2; display: flex; align-items: center; justify-content: center; }
+.gallery-arrow.prev { left: 8px; }
+.gallery-arrow.next { right: 8px; }
+.gallery-arrow:hover { background: rgba(0, 0, 0, .65); }
+
+.product-modal .product-gallery { border-radius: 12px; margin-bottom: 12px; }
+.product-modal .gallery-img { height: 200px; }
