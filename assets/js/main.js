@@ -505,8 +505,6 @@ function productLabels() {
     return {
       stock: "现货在售",
       self: "爱商汇自营商品",
-      source: "1688 源头直供 · 已通过质检与合规审查",
-      desc: "本商品由 1688 源头采集，经本站质检后上架展示，属本站自营商品。",
       contact: "联系采购 / 洽谈",
       category: "类目",
       close: "关闭"
@@ -515,12 +513,45 @@ function productLabels() {
   return {
     stock: "In Stock",
     self: "AiShangHui self-operated product",
-    source: "1688 factory-direct · quality & compliance checked",
-    desc: "Sourced from 1688 and quality-checked by AiShangHui. Listed as our own product.",
     contact: "Contact Us",
     category: "Category",
     close: "Close"
   };
+}
+
+function parsePrice(s) {
+  var m = String(s).match(/^\s*([^\d\s]*)\s*([\d]+(?:\.[\d]+)?)/);
+  if (!m) return { cur: "", num: 0 };
+  return { cur: m[1], num: parseFloat(m[2]) };
+}
+
+function buildPriceTiers(priceStr) {
+  var p = parsePrice(priceStr);
+  var zh = currentLang === "zh";
+  var rows = [
+    [1, 1, ""],
+    [2, 0.9, "-10%"],
+    [3, 0.85, "-15%"],
+    [4, 0.8, "-20%"],
+    [100, 0.6, "-40%"]
+  ];
+  var box = el("div", { class: "price-tiers" });
+  rows.forEach(function (r) {
+    var q = r[0], rate = r[1], off = r[2];
+    var qty;
+    if (q === 1) qty = zh ? "1件" : "1 pc";
+    else if (q === 2) qty = zh ? "2件" : "2 pcs";
+    else if (q === 3) qty = zh ? "3件" : "3 pcs";
+    else if (q === 4) qty = zh ? "4件及以上" : "4+ pcs";
+    else qty = zh ? "100件以上" : "100+ pcs";
+    var row = el("div", { class: "price-tier-row" });
+    row.appendChild(el("span", { class: "price-tier-qty" }, qty));
+    if (off) row.appendChild(el("span", { class: "price-tier-off" }, off));
+    var v = Math.round(p.num * rate * 100) / 100;
+    row.appendChild(el("span", { class: "price-tier-price" }, p.cur + String(v)));
+    box.appendChild(row);
+  });
+  return box;
 }
 
 function openProductModal(it, cat) {
@@ -537,8 +568,6 @@ function openProductModal(it, cat) {
   var meta = el("div", { class: "product-modal-meta" }, L.category + "：" + (cat.name || cat));
   var price = el("div", { class: "product-modal-price" }, it.price);
   var self = el("div", { class: "product-modal-self" }, L.self);
-  var desc = el("p", { class: "product-modal-desc" }, L.desc);
-  var source = el("p", { class: "product-modal-source" }, L.source);
   var cta = el("button", { class: "btn btn-primary", type: "button" }, L.contact);
   cta.addEventListener("click", function () { overlay.remove(); showView("contact"); });
 
@@ -549,8 +578,7 @@ function openProductModal(it, cat) {
   box.appendChild(meta);
   box.appendChild(price);
   box.appendChild(self);
-  box.appendChild(desc);
-  box.appendChild(source);
+  box.appendChild(buildPriceTiers(it.price));
   box.appendChild(cta);
   overlay.appendChild(box);
   document.body.appendChild(overlay);
