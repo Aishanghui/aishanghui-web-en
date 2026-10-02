@@ -432,12 +432,16 @@ function buildWholesale(t) {
 function productShown(it, ov) {
   var name = ov.name || it.name;
   var price = ov.price || it.price;
+  var sku = ov.sku || it.sku || "";
+  var white = ov.white || it.white || "";
+  var video = ov.video || it.video || "";
+  var usage = ov.usage || it.usage || "";
   var images = [];
   if (ov.image) images = String(ov.image).split(",");
   else if (it.images && it.images.length) images = it.images;
   else if (it.image) images = [it.image];
   images = images.map(function (s) { return String(s).trim(); }).filter(Boolean);
-  return { name: name, price: price, images: images };
+  return { name: name, price: price, images: images, sku: sku, white: white, video: video, usage: usage };
 }
 
 function buildGallery(it, cat) {
@@ -485,8 +489,7 @@ function buildCategory(idx, t) {
     var key = dataLang + ":" + idx + ":" + itemIdx;
     var ov = overrides[key] || {};
     if (isAdmin) {
-      var imgStr = (it.images && it.images.length) ? it.images.join(", ") : (it.image || "");
-      list.appendChild(buildAdminRow(key, ov.name || it.name, ov.price || it.price, ov.image || imgStr, cat));
+      list.appendChild(buildAdminRow(key, it, ov, cat));
       return;
     }
     var shown = productShown(it, ov);
@@ -503,13 +506,25 @@ function buildCategory(idx, t) {
   return section("cat", "wholesale", c);
 }
 
-function buildAdminRow(key, name, price, image, cat) {
+function buildAdminRow(key, it, ov, cat) {
   var row = el("div", { class: "wholesale-product admin" });
+  var name = ov.name || it.name;
+  var price = ov.price || it.price;
+  var imgStr = (it.images && it.images.length) ? it.images.join(", ") : (it.image || "");
+  var image = ov.image || imgStr;
+  var sku = ov.sku || it.sku || "";
+  var white = ov.white || it.white || "";
+  var video = ov.video || it.video || "";
+  var usage = ov.usage || it.usage || "";
   var prev = el("img", { class: "admin-preview", alt: "预览" });
   var imgIn = el("input", { class: "admin-field admin-img", type: "text", value: image || "", placeholder: "图片URL（可填网址，或点右侧选择图片上传）" });
   var fileIn = el("input", { class: "admin-field admin-file", type: "file", accept: "image/*", title: "选择图片上传" });
   var nameIn = el("input", { class: "admin-field admin-name", type: "text", value: name, placeholder: "名称" });
   var priceIn = el("input", { class: "admin-field admin-price", type: "text", value: price, placeholder: "价格" });
+  var skuIn = el("input", { class: "admin-field admin-sku", type: "text", value: sku, placeholder: "SKU" });
+  var whiteIn = el("input", { class: "admin-field admin-white", type: "text", value: white, placeholder: "白底图URL" });
+  var videoIn = el("input", { class: "admin-field admin-video", type: "text", value: video, placeholder: "视频URL" });
+  var usageIn = el("textarea", { class: "admin-field admin-usage", rows: "2", placeholder: "使用说明" }, usage || "");
   var save = el("button", { class: "btn btn-primary admin-save", type: "button" }, "保存");
   var del = el("button", { class: "btn admin-del", type: "button" }, "还原");
 
@@ -530,7 +545,15 @@ function buildAdminRow(key, name, price, image, cat) {
 
   save.addEventListener("click", function () {
     var o = loadOverrides();
-    o[key] = { name: nameIn.value.trim(), price: priceIn.value.trim(), image: imgIn.value.trim() };
+    o[key] = {
+      name: nameIn.value.trim(),
+      price: priceIn.value.trim(),
+      image: imgIn.value.trim(),
+      sku: skuIn.value.trim(),
+      white: whiteIn.value.trim(),
+      video: videoIn.value.trim(),
+      usage: usageIn.value.trim()
+    };
     if (saveOverrides(o)) { toast("已保存"); render(); }
     else { toast("保存失败：图片过大，请压缩后重试或改用图片网址"); }
   });
@@ -546,6 +569,10 @@ function buildAdminRow(key, name, price, image, cat) {
   row.appendChild(fileIn);
   row.appendChild(nameIn);
   row.appendChild(priceIn);
+  row.appendChild(skuIn);
+  row.appendChild(whiteIn);
+  row.appendChild(videoIn);
+  row.appendChild(usageIn);
   row.appendChild(save);
   row.appendChild(del);
   return row;
@@ -558,7 +585,11 @@ function productLabels() {
       self: "爱商汇自营商品",
       contact: "联系采购 / 洽谈",
       category: "类目",
-      close: "关闭"
+      close: "关闭",
+      sku: "SKU",
+      white: "白底图",
+      video: "商品视频",
+      usage: "使用说明"
     };
   }
   return {
@@ -566,7 +597,11 @@ function productLabels() {
     self: "AiShangHui self-operated product",
     contact: "Contact Us",
     category: "Category",
-    close: "Close"
+    close: "Close",
+    sku: "SKU",
+    white: "White Background Image",
+    video: "Product Video",
+    usage: "Instructions"
   };
 }
 
@@ -623,13 +658,26 @@ function openProductModal(it, cat) {
   cta.addEventListener("click", function () { overlay.remove(); showView("contact"); });
 
   box.appendChild(close);
-  box.appendChild(buildGallery(it, cat));
   box.appendChild(stock);
   box.appendChild(name);
+  if (it.sku) box.appendChild(el("div", { class: "product-modal-sku" }, L.sku + "：" + it.sku));
+  box.appendChild(buildGallery(it, cat));
+  if (it.white) {
+    box.appendChild(el("div", { class: "product-modal-block-label" }, L.white));
+    box.appendChild(el("img", { class: "product-modal-white", src: it.white, alt: L.white }));
+  }
+  if (it.video) {
+    box.appendChild(el("div", { class: "product-modal-block-label" }, L.video));
+    box.appendChild(el("video", { class: "product-modal-video", controls: "controls", src: it.video }));
+  }
   box.appendChild(meta);
   box.appendChild(price);
   box.appendChild(self);
   box.appendChild(buildPriceTiers(it.price));
+  if (it.usage) {
+    box.appendChild(el("div", { class: "product-modal-block-label" }, L.usage));
+    box.appendChild(el("div", { class: "product-modal-usage" }, it.usage));
+  }
   box.appendChild(cta);
   overlay.appendChild(box);
   document.body.appendChild(overlay);
