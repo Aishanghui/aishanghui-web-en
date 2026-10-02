@@ -77,7 +77,37 @@ function loadOverrides() {
   try { return JSON.parse(localStorage.getItem(PRODUCT_OVERRIDES_KEY) || "{}"); } catch (e) { return {}; }
 }
 function saveOverrides(o) {
-  try { localStorage.setItem(PRODUCT_OVERRIDES_KEY, JSON.stringify(o)); } catch (e) {}
+  try { localStorage.setItem(PRODUCT_OVERRIDES_KEY, JSON.stringify(o)); return true; } catch (e) { return false; }
+}
+
+function toast(msg) {
+  var n = document.getElementById("ash-toast");
+  if (!n) {
+    n = el("div", { id: "ash-toast", class: "toast" });
+    document.body.appendChild(n);
+  }
+  n.textContent = msg;
+  n.classList.add("show");
+  clearTimeout(n._t);
+  n._t = setTimeout(function () { n.classList.remove("show"); }, 1600);
+}
+
+function fileToDataUrl(file, cb) {
+  var img = new Image();
+  var url = URL.createObjectURL(file);
+  img.onload = function () {
+    URL.revokeObjectURL(url);
+    var max = 1280;
+    var w = img.width, h = img.height;
+    var k = Math.min(1, max / Math.max(w, h));
+    w = Math.round(w * k); h = Math.round(h * k);
+    var cv = document.createElement("canvas");
+    cv.width = w; cv.height = h;
+    cv.getContext("2d").drawImage(img, 0, 0, w, h);
+    cb(cv.toDataURL("image/jpeg", 0.82));
+  };
+  img.onerror = function () { URL.revokeObjectURL(url); cb(""); };
+  img.src = url;
 }
 
 /* ---------- 导航平滑滚动 ---------- */
@@ -475,24 +505,45 @@ function buildCategory(idx, t) {
 
 function buildAdminRow(key, name, price, image, cat) {
   var row = el("div", { class: "wholesale-product admin" });
-  var imgIn = el("input", { class: "admin-field admin-img", type: "text", value: image || "", placeholder: "图片URL" });
+  var prev = el("img", { class: "admin-preview", alt: "预览" });
+  var imgIn = el("input", { class: "admin-field admin-img", type: "text", value: image || "", placeholder: "图片URL（可填网址，或点右侧选择图片上传）" });
+  var fileIn = el("input", { class: "admin-field admin-file", type: "file", accept: "image/*", title: "选择图片上传" });
   var nameIn = el("input", { class: "admin-field admin-name", type: "text", value: name, placeholder: "名称" });
   var priceIn = el("input", { class: "admin-field admin-price", type: "text", value: price, placeholder: "价格" });
   var save = el("button", { class: "btn btn-primary admin-save", type: "button" }, "保存");
   var del = el("button", { class: "btn admin-del", type: "button" }, "还原");
+
+  function updatePreview() {
+    var v = String(imgIn.value || "").trim();
+    if (v) { prev.src = v; prev.style.display = "block"; }
+    else { prev.removeAttribute("src"); prev.style.display = "none"; }
+  }
+  updatePreview();
+  imgIn.addEventListener("input", updatePreview);
+  fileIn.addEventListener("change", function () {
+    var f = fileIn.files && fileIn.files[0];
+    if (!f) return;
+    fileToDataUrl(f, function (d) {
+      if (d) { imgIn.value = d; updatePreview(); }
+    });
+  });
+
   save.addEventListener("click", function () {
     var o = loadOverrides();
     o[key] = { name: nameIn.value.trim(), price: priceIn.value.trim(), image: imgIn.value.trim() };
-    saveOverrides(o);
-    render();
+    if (saveOverrides(o)) { toast("已保存"); render(); }
+    else { toast("保存失败：图片过大，请压缩后重试或改用图片网址"); }
   });
   del.addEventListener("click", function () {
     var o = loadOverrides();
     delete o[key];
     saveOverrides(o);
+    toast("已还原");
     render();
   });
+  row.appendChild(prev);
   row.appendChild(imgIn);
+  row.appendChild(fileIn);
   row.appendChild(nameIn);
   row.appendChild(priceIn);
   row.appendChild(save);
