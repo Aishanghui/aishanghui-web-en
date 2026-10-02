@@ -315,3 +315,12 @@ body {
 
 .product-modal .product-gallery { border-radius: 12px; margin-bottom: 12px; }
 .product-modal .gallery-img { height: 200px; }
+
+/* ---------- 商品阶梯批发价 ---------- */
+.price-tiers { margin: 12px 0 16px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.price-tier-row { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+.price-tier-row:last-child { border-bottom: none; }
+.price-tier-row:nth-child(odd) { background: var(--bg); }
+.price-tier-qty { flex: 1; font-size: 13px; font-weight: 600; color: var(--ink); }
+.price-tier-off { font-size: 12px; font-weight: 700; color: #e11d48; }
+.price-tier-price { font-size: 15px; font-weight: 800; color: var(--brand); }
