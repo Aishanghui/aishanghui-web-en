@@ -60,9 +60,12 @@ var VIEWS = ["home", "about", "ppt", "miniapp", "web", "reception", "wholesale",
 
 function currentViewFromHash() {
   var h = location.hash.replace(/^#\/?/, "");
+  var m = h.match(/^wholesale\/(\d+)$/);
+  if (m) { currentCatIdx = parseInt(m[1], 10) || 0; return "cat"; }
   return VIEWS.indexOf(h) >= 0 ? h : "home";
 }
 
+var currentCatIdx = 0;
 var view = currentViewFromHash();
 
 /* ---------- 商品数据覆盖（本地管理编辑，localStorage 持久化） ---------- */
@@ -89,6 +92,14 @@ function showView(id) {
   if (location.hash !== "#" + id) {
     try { history.pushState(null, "", "#" + id); } catch (e) { location.hash = "#" + id; }
   }
+  render();
+}
+
+function showCategory(idx) {
+  currentCatIdx = idx;
+  view = "cat";
+  var h = "#wholesale/" + idx;
+  try { history.pushState(null, "", h); } catch (e) { location.hash = h; }
   render();
 }
 
@@ -369,48 +380,97 @@ function buildWholesale(t) {
   var catsData = (pl[dataLang] && pl[dataLang].categories) ? pl[dataLang].categories : (pl.en && pl.en.categories);
   if (!catsData || !catsData.length || typeof catsData[0] === "string") catsData = (pl.en && pl.en.categories);
 
-  var overrides = isAdmin ? loadOverrides() : {};
-
-  var cats = el("div", { class: "wholesale-cats" });
+  var grid = el("div", { class: "wholesale-cat-grid" });
   catsData.forEach(function (cat, catIdx) {
-    var details = el("details", { class: "wholesale-cat" });
-    details.appendChild(el("summary", {}, (cat.icon ? cat.icon + " " : "") + (cat.name || "")));
-    if (cat.items && cat.items.length) {
-      var list = el("div", { class: "wholesale-products" });
-      cat.items.forEach(function (it, itemIdx) {
-        var key = dataLang + ":" + catIdx + ":" + itemIdx;
-        var ov = overrides[key] || {};
-        var name = ov.name || it.name;
-        var price = ov.price || it.price;
-        var image = ov.image || it.image;
-
-        if (isAdmin) {
-          list.appendChild(buildAdminRow(key, name, price, image, cat));
-          return;
-        }
-
-        var card = el("div", { class: "wholesale-product product-click" });
-        if (image) card.appendChild(el("img", { class: "wholesale-product-img", src: image, alt: name, loading: "lazy" }));
-        else card.appendChild(el("div", { class: "wholesale-product-img placeholder" }, cat.icon || "🛍️"));
-        var body = el("div", { class: "wholesale-product-body" });
-        body.appendChild(el("div", { class: "wholesale-product-name" }, name));
-        body.appendChild(el("div", { class: "wholesale-product-price" }, price));
-        card.appendChild(body);
-        var shown = { name: name, price: price, image: image };
-        card.addEventListener("click", function () { openProductModal(shown, cat); });
-        list.appendChild(card);
-      });
-      details.appendChild(list);
-    }
-    cats.appendChild(details);
+    var card = el("a", { class: "wholesale-cat-card", href: "#wholesale/" + catIdx });
+    card.appendChild(el("div", { class: "wholesale-cat-icon" }, cat.icon || "🛍️"));
+    card.appendChild(el("div", { class: "wholesale-cat-name" }, cat.name || ""));
+    var count = (cat.items && cat.items.length) || 0;
+    card.appendChild(el("div", { class: "wholesale-cat-count" }, count + (currentLang === "zh" ? " 件商品" : " items")));
+    card.addEventListener("click", function (e) { e.preventDefault(); showCategory(catIdx); });
+    grid.appendChild(card);
   });
-  c.appendChild(cats);
+  c.appendChild(grid);
 
   if (t.wholesale.note) c.appendChild(el("p", { class: "wholesale-note" }, t.wholesale.note));
   var cta = el("a", { class: "btn btn-primary", href: "#contact" }, t.wholesale.cta);
   cta.addEventListener("click", function (e) { e.preventDefault(); showView("contact"); });
   c.appendChild(el("div", { class: "center" }, cta));
   return section("wholesale", "wholesale", c);
+}
+
+function productShown(it, ov) {
+  var name = ov.name || it.name;
+  var price = ov.price || it.price;
+  var images = [];
+  if (ov.image) images = String(ov.image).split(",");
+  else if (it.images && it.images.length) images = it.images;
+  else if (it.image) images = [it.image];
+  images = images.map(function (s) { return String(s).trim(); }).filter(Boolean);
+  return { name: name, price: price, images: images };
+}
+
+function buildGallery(it, cat) {
+  var imgs = (it.images && it.images.length) ? it.images : [];
+  var wrap = el("div", { class: "product-gallery" });
+  if (!imgs.length) {
+    wrap.appendChild(el("div", { class: "gallery-slide gallery-placeholder" }, cat.icon || "🛍️"));
+    return wrap;
+  }
+  var track = el("div", { class: "gallery-track" });
+  imgs.forEach(function (src, i) {
+    var slide = el("div", { class: "gallery-slide" });
+    slide.appendChild(el("img", { class: "gallery-img", src: src, alt: it.name || "product", loading: i === 0 ? "eager" : "lazy" }));
+    track.appendChild(slide);
+  });
+  wrap.appendChild(track);
+  if (imgs.length > 1) {
+    var prev = el("button", { class: "gallery-arrow prev", type: "button", "aria-label": "‹" }, "‹");
+    var next = el("button", { class: "gallery-arrow next", type: "button", "aria-label": "›" }, "›");
+    prev.addEventListener("click", function (e) { e.stopPropagation(); track.scrollBy({ left: -(track.clientWidth || 1), behavior: "smooth" }); });
+    next.addEventListener("click", function (e) { e.stopPropagation(); track.scrollBy({ left: (track.clientWidth || 1), behavior: "smooth" }); });
+    wrap.appendChild(prev); wrap.appendChild(next);
+  }
+  return wrap;
+}
+
+function buildCategory(idx, t) {
+  var c = container();
+  var pl = window.PRODUCTS || {};
+  var dataLang = (currentLang === "zh" && pl.zh) ? "zh" : "en";
+  var catsData = (pl[dataLang] && pl[dataLang].categories) ? pl[dataLang].categories : (pl.en && pl.en.categories);
+  if (!catsData || !catsData.length || typeof catsData[0] === "string") catsData = (pl.en && pl.en.categories);
+  var cat = catsData[idx];
+  if (!cat) {
+    c.appendChild(el("p", {}, currentLang === "zh" ? "类目不存在" : "Category not found"));
+    return section("cat", "wholesale", c);
+  }
+
+  var catName = (cat.icon ? cat.icon + " " : "") + (cat.name || "");
+  c.appendChild(sectionHead({ title: catName }, null));
+
+  var overrides = isAdmin ? loadOverrides() : {};
+  var list = el("div", { class: "wholesale-cat-products" });
+  (cat.items || []).forEach(function (it, itemIdx) {
+    var key = dataLang + ":" + idx + ":" + itemIdx;
+    var ov = overrides[key] || {};
+    if (isAdmin) {
+      var imgStr = (it.images && it.images.length) ? it.images.join(", ") : (it.image || "");
+      list.appendChild(buildAdminRow(key, ov.name || it.name, ov.price || it.price, ov.image || imgStr, cat));
+      return;
+    }
+    var shown = productShown(it, ov);
+    var card = el("div", { class: "wholesale-product-card product-click" });
+    card.appendChild(buildGallery(shown, cat));
+    var body = el("div", { class: "wholesale-product-body" });
+    body.appendChild(el("div", { class: "wholesale-product-name" }, shown.name));
+    body.appendChild(el("div", { class: "wholesale-product-price" }, shown.price));
+    card.appendChild(body);
+    card.addEventListener("click", function () { openProductModal(shown, cat); });
+    list.appendChild(card);
+  });
+  c.appendChild(list);
+  return section("cat", "wholesale", c);
 }
 
 function buildAdminRow(key, name, price, image, cat) {
@@ -472,9 +532,6 @@ function openProductModal(it, cat) {
   close.addEventListener("click", function () { overlay.remove(); });
   overlay.addEventListener("click", function (e) { if (e.target === overlay) overlay.remove(); });
 
-  var img;
-  if (it.image) img = el("img", { class: "product-modal-img", src: it.image, alt: it.name });
-  else img = el("div", { class: "product-modal-img placeholder" }, (cat.icon || "🛍️"));
   var stock = el("span", { class: "product-modal-stock" }, L.stock);
   var name = el("h3", { class: "product-modal-name" }, it.name);
   var meta = el("div", { class: "product-modal-meta" }, L.category + "：" + (cat.name || cat));
@@ -486,7 +543,7 @@ function openProductModal(it, cat) {
   cta.addEventListener("click", function () { overlay.remove(); showView("contact"); });
 
   box.appendChild(close);
-  box.appendChild(img);
+  box.appendChild(buildGallery(it, cat));
   box.appendChild(stock);
   box.appendChild(name);
   box.appendChild(meta);
@@ -668,6 +725,8 @@ function render() {
   if (view === "home") {
     app.appendChild(buildHero(t));
     app.appendChild(buildServices(t));
+  } else if (view === "cat") {
+    app.appendChild(buildCategory(currentCatIdx, t));
   } else {
     app.appendChild(buildModule(view, t));
   }
