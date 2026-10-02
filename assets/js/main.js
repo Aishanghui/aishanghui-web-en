@@ -514,7 +514,7 @@ function buildAdminRow(key, name, price, image, cat) {
   var del = el("button", { class: "btn admin-del", type: "button" }, "还原");
 
   function updatePreview() {
-    var v = String(imgIn.value || "").trim();
+    var v = String(imgIn.value || "").split(",")[0].trim();
     if (v) { prev.src = v; prev.style.display = "block"; }
     else { prev.removeAttribute("src"); prev.style.display = "none"; }
   }
