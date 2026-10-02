@@ -10,7 +10,7 @@ var SITE_CONFIG = {
   wechat: "wxid_bzgv0cn5l16922",
   email: "19325116173@163.com",
   phone: "+86 193 2511 6173",
-  formEndpoint: "",
+  formEndpoint: "https://formsubmit.co/ajax/19325116173@163.com",
   payment: {
     alipay: "19325116173",  // 支付宝收款账号（手机号/邮箱）
     alipayName: "AiShangHui", // 支付宝实名
@@ -944,9 +944,13 @@ function buildCartPage() {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({
-          order: cart,
-          customer: { name: nameIn.value.trim(), phone: phoneIn.value.trim(), address: addrIn.value.trim(), note: noteIn.value.trim() },
-          text: body,
+          _subject: (zh ? "爱商汇订单" : "AiShangHui Order") + " - " + nameIn.value.trim(),
+          _template: "table",
+          name: nameIn.value.trim(),
+          phone: phoneIn.value.trim(),
+          address: addrIn.value.trim(),
+          note: noteIn.value.trim(),
+          order: body,
           lang: currentLang
         })
       }).then(function (r) {
