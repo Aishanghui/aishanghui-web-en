@@ -284,7 +284,7 @@ body {
 .wholesale-product.admin { flex-wrap: wrap; gap: 6px; }
 .admin-field { border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; font-size: 13px; background: var(--surface); color: var(--ink); }
 .admin-name { flex: 1 1 100%; }
-.admin-img { flex: 1 1 100%; }
+.admin-img { flex: 1 1 160px; min-width: 160px; }
 .admin-price { width: 100px; }
 .admin-save, .admin-del { flex: none; }
 .admin-del { background: transparent; border: 1px solid var(--line); color: var(--muted); }
@@ -306,15 +306,16 @@ body {
 .gallery-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
 .gallery-track::-webkit-scrollbar { display: none; }
 .gallery-slide { flex: 0 0 100%; scroll-snap-align: start; }
-.gallery-img { display: block; width: 100%; height: 190px; object-fit: cover; }
-.gallery-placeholder { height: 190px; display: flex; align-items: center; justify-content: center; font-size: 64px; background: var(--bg); color: var(--muted); }
+.gallery-img { display: block; width: 100%; height: 260px; object-fit: cover; }
+.gallery-placeholder { height: 260px; display: flex; align-items: center; justify-content: center; font-size: 64px; background: var(--bg); color: var(--muted); }
 .gallery-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; border: none; border-radius: 50%; background: rgba(0, 0, 0, .45); color: #fff; font-size: 18px; line-height: 1; cursor: pointer; z-index: 2; display: flex; align-items: center; justify-content: center; }
 .gallery-arrow.prev { left: 8px; }
 .gallery-arrow.next { right: 8px; }
 .gallery-arrow:hover { background: rgba(0, 0, 0, .65); }
 
 .product-modal .product-gallery { border-radius: 12px; margin-bottom: 12px; }
-.product-modal .gallery-img { height: 200px; }
+.product-modal .gallery-img { height: 300px; }
+.product-modal .gallery-placeholder { height: 300px; }
 
 /* ---------- 商品阶梯批发价 ---------- */
 .price-tiers { margin: 12px 0 16px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
@@ -324,3 +325,9 @@ body {
 .price-tier-qty { flex: 1; font-size: 13px; font-weight: 600; color: var(--ink); }
 .price-tier-off { font-size: 12px; font-weight: 700; color: #e11d48; }
 .price-tier-price { font-size: 15px; font-weight: 800; color: var(--brand); }
+
+/* ---------- 商品后台：图片上传/预览 + 保存提示 ---------- */
+.admin-preview { display: none; flex: 1 1 100%; width: 100%; height: 180px; object-fit: contain; border-radius: 8px; background: var(--bg, #f5f6fa); border: 1px dashed var(--line); }
+.admin-file { flex: 0 0 auto; width: 130px; cursor: pointer; }
+.toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); background: rgba(17, 24, 39, .92); color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
