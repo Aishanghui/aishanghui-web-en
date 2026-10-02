@@ -10,7 +10,15 @@ var SITE_CONFIG = {
   wechat: "wxid_bzgv0cn5l16922",
   email: "19325116173@163.com",
   phone: "+86 193 2511 6173",
-  formEndpoint: ""
+  formEndpoint: "",
+  payment: {
+    alipay: "19325116173",  // 支付宝收款账号（手机号/邮箱）
+    alipayName: "AiShangHui", // 支付宝实名
+    bankName: "",      // 开户行（如：中国工商银行）
+    bankCard: "",      // 银行卡号
+    bankHolder: "",    // 户名
+    qrImage: ""        // 收款码图片 URL
+  }
 };
 
 /* ---------- 工具函数 ---------- */
@@ -56,6 +64,18 @@ function currentViewFromHash() {
 }
 
 var view = currentViewFromHash();
+
+/* ---------- 商品数据覆盖（本地管理编辑，localStorage 持久化） ---------- */
+var PRODUCT_OVERRIDES_KEY = "ASH_PRODUCT_OVERRIDES";
+var isAdmin = (function () {
+  try { return new URLSearchParams(location.search).get("admin") === "1"; } catch (e) { return false; }
+})();
+function loadOverrides() {
+  try { return JSON.parse(localStorage.getItem(PRODUCT_OVERRIDES_KEY) || "{}"); } catch (e) { return {}; }
+}
+function saveOverrides(o) {
+  try { localStorage.setItem(PRODUCT_OVERRIDES_KEY, JSON.stringify(o)); } catch (e) {}
+}
 
 /* ---------- 导航平滑滚动 ---------- */
 function scrollToId(id) {
@@ -344,19 +364,40 @@ function buildWholesale(t) {
   var c = container();
   c.appendChild(sectionHead(t.wholesale, null));
 
+  var pl = window.PRODUCTS || {};
+  var dataLang = (currentLang === "zh" && pl.zh) ? "zh" : "en";
+  var catsData = (pl[dataLang] && pl[dataLang].categories) ? pl[dataLang].categories : (pl.en && pl.en.categories);
+  if (!catsData || !catsData.length || typeof catsData[0] === "string") catsData = (pl.en && pl.en.categories);
+
+  var overrides = isAdmin ? loadOverrides() : {};
+
   var cats = el("div", { class: "wholesale-cats" });
-  var catsData = (window.PRODUCTS && window.PRODUCTS[currentLang] && window.PRODUCTS[currentLang].categories)
-    ? window.PRODUCTS[currentLang].categories : t.wholesale.categories;
-  catsData.forEach(function (cat) {
+  catsData.forEach(function (cat, catIdx) {
     var details = el("details", { class: "wholesale-cat" });
     details.appendChild(el("summary", {}, (cat.icon ? cat.icon + " " : "") + (cat.name || "")));
     if (cat.items && cat.items.length) {
       var list = el("div", { class: "wholesale-products" });
-      cat.items.forEach(function (it) {
+      cat.items.forEach(function (it, itemIdx) {
+        var key = dataLang + ":" + catIdx + ":" + itemIdx;
+        var ov = overrides[key] || {};
+        var name = ov.name || it.name;
+        var price = ov.price || it.price;
+        var image = ov.image || it.image;
+
+        if (isAdmin) {
+          list.appendChild(buildAdminRow(key, name, price, image, cat));
+          return;
+        }
+
         var card = el("div", { class: "wholesale-product product-click" });
-        card.appendChild(el("div", { class: "wholesale-product-name" }, it.name));
-        card.appendChild(el("div", { class: "wholesale-product-price" }, it.price));
-        card.addEventListener("click", function () { openProductModal(it, cat); });
+        if (image) card.appendChild(el("img", { class: "wholesale-product-img", src: image, alt: name, loading: "lazy" }));
+        else card.appendChild(el("div", { class: "wholesale-product-img placeholder" }, cat.icon || "🛍️"));
+        var body = el("div", { class: "wholesale-product-body" });
+        body.appendChild(el("div", { class: "wholesale-product-name" }, name));
+        body.appendChild(el("div", { class: "wholesale-product-price" }, price));
+        card.appendChild(body);
+        var shown = { name: name, price: price, image: image };
+        card.addEventListener("click", function () { openProductModal(shown, cat); });
         list.appendChild(card);
       });
       details.appendChild(list);
@@ -370,6 +411,33 @@ function buildWholesale(t) {
   cta.addEventListener("click", function (e) { e.preventDefault(); showView("contact"); });
   c.appendChild(el("div", { class: "center" }, cta));
   return section("wholesale", "wholesale", c);
+}
+
+function buildAdminRow(key, name, price, image, cat) {
+  var row = el("div", { class: "wholesale-product admin" });
+  var imgIn = el("input", { class: "admin-field admin-img", type: "text", value: image || "", placeholder: "图片URL" });
+  var nameIn = el("input", { class: "admin-field admin-name", type: "text", value: name, placeholder: "名称" });
+  var priceIn = el("input", { class: "admin-field admin-price", type: "text", value: price, placeholder: "价格" });
+  var save = el("button", { class: "btn btn-primary admin-save", type: "button" }, "保存");
+  var del = el("button", { class: "btn admin-del", type: "button" }, "还原");
+  save.addEventListener("click", function () {
+    var o = loadOverrides();
+    o[key] = { name: nameIn.value.trim(), price: priceIn.value.trim(), image: imgIn.value.trim() };
+    saveOverrides(o);
+    render();
+  });
+  del.addEventListener("click", function () {
+    var o = loadOverrides();
+    delete o[key];
+    saveOverrides(o);
+    render();
+  });
+  row.appendChild(imgIn);
+  row.appendChild(nameIn);
+  row.appendChild(priceIn);
+  row.appendChild(save);
+  row.appendChild(del);
+  return row;
 }
 
 function productLabels() {
@@ -404,7 +472,9 @@ function openProductModal(it, cat) {
   close.addEventListener("click", function () { overlay.remove(); });
   overlay.addEventListener("click", function (e) { if (e.target === overlay) overlay.remove(); });
 
-  var img = el("div", { class: "product-modal-img" }, "🛍️");
+  var img;
+  if (it.image) img = el("img", { class: "product-modal-img", src: it.image, alt: it.name });
+  else img = el("div", { class: "product-modal-img placeholder" }, (cat.icon || "🛍️"));
   var stock = el("span", { class: "product-modal-stock" }, L.stock);
   var name = el("h3", { class: "product-modal-name" }, it.name);
   var meta = el("div", { class: "product-modal-meta" }, L.category + "：" + (cat.name || cat));
@@ -453,6 +523,27 @@ function buildContact(t) {
     if (r[2]) info.appendChild(row(r[0], r[1], r[2]));
   });
   info.appendChild(row("🕒", t.contact.hours, t.contact.hoursVal));
+
+  var pay = SITE_CONFIG.payment || {};
+  var payRows = [];
+  if (pay.qrImage) payRows.push({ icon: "📱", label: t.contact.payQr, qr: pay.qrImage });
+  if (pay.alipay) payRows.push({ icon: "💚", label: t.contact.payAlipay, value: pay.alipay + (pay.alipayName ? "（" + pay.alipayName + "）" : "") });
+  if (pay.bankCard) {
+    var bankVal = pay.bankCard;
+    if (pay.bankName) bankVal = pay.bankName + " · " + bankVal;
+    if (pay.bankHolder) bankVal += "（" + pay.bankHolder + "）";
+    payRows.push({ icon: "🏦", label: t.contact.payBank, value: bankVal });
+  }
+  if (payRows.length) {
+    info.appendChild(el("h3", { class: "pay-title" }, t.contact.payTitle));
+    payRows.forEach(function (pr) {
+      if (pr.qr) {
+        info.appendChild(el("img", { class: "pay-qr", src: pr.qr, alt: t.contact.payQr }));
+        return;
+      }
+      info.appendChild(row(pr.icon, pr.label, pr.value));
+    });
+  }
 
   var form = el("form", { class: "contact-form" });
   var nameInput = el("input", { class: "field", type: "text", name: "name", placeholder: t.contact.form.name });
@@ -508,7 +599,20 @@ function buildContact(t) {
 }
 
 function buildFooter(t) {
-  return el("footer", { class: "footer" }, el("div", { class: "container" }, t.footer.copyright));
+  var foot = el("footer", { class: "footer" });
+  var c = el("div", { class: "container" });
+  c.appendChild(el("div", {}, t.footer.copyright));
+  var adm = el("a", { class: "admin-link", href: "#" }, isAdmin ? "退出管理" : "管理");
+  adm.addEventListener("click", function (e) {
+    e.preventDefault();
+    var url = new URL(location.href);
+    if (isAdmin) url.searchParams.delete("admin");
+    else url.searchParams.set("admin", "1");
+    location.href = url.toString();
+  });
+  c.appendChild(adm);
+  foot.appendChild(c);
+  return foot;
 }
 
 function buildModule(id, t) {
@@ -549,6 +653,9 @@ function render() {
       if (!t.wholesale.note) t.wholesale.note = en.wholesale.note;
       delete t.wholesale.subtitle;
     }
+    ["payTitle", "payAlipay", "payAlipayName", "payBank", "payBankName", "payBankCard", "payBankHolder", "payQr"].forEach(function (k) {
+      if (t.contact && !t.contact[k]) t.contact[k] = (en.contact && en.contact[k]) || "";
+    });
   }
 
   document.documentElement.lang = currentLang;
