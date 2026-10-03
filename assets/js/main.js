@@ -497,12 +497,24 @@ function productShown(it, ov) {
   var white = ov.white || it.white || "";
   var video = ov.video || it.video || "";
   var usage = ov.usage || it.usage || "";
+  var skus = it.skus || [];
   var images = [];
   if (ov.image) images = String(ov.image).split(",");
   else if (it.images && it.images.length) images = it.images;
   else if (it.image) images = [it.image];
   images = images.map(function (s) { return String(s).trim(); }).filter(Boolean);
-  return { name: name, price: price, images: images, sku: sku, white: white, video: video, usage: usage };
+  return { name: name, price: price, images: images, sku: sku, white: white, video: video, usage: usage, skus: skus };
+}
+
+function collectSkuImages(skus) {
+  var out = [];
+  (skus || []).forEach(function (g) {
+    if (!g || !g.values) return;
+    g.values.forEach(function (v) {
+      if (v && v.image) out.push({ name: v.name || g.name || "", image: v.image });
+    });
+  });
+  return out;
 }
 
 function buildGallery(it, cat) {
@@ -774,6 +786,17 @@ function buildProductPage(catIdx, itemIdx) {
   right.appendChild(el("span", { class: "product-modal-stock" }, L.stock));
   right.appendChild(el("h1", { class: "product-detail-name" }, shown.name));
   if (shown.sku) right.appendChild(el("div", { class: "product-modal-sku" }, L.sku + "：" + shown.sku));
+  var skuThumbs = collectSkuImages(shown.skus);
+  if (skuThumbs.length) {
+    var skuWrap = el("div", { class: "product-sku-thumbs" });
+    skuThumbs.forEach(function (s) {
+      var t = el("div", { class: "sku-thumb" });
+      t.appendChild(el("img", { src: s.image, alt: s.name, loading: "lazy" }));
+      if (s.name) t.appendChild(el("span", {}, s.name));
+      skuWrap.appendChild(t);
+    });
+    right.appendChild(skuWrap);
+  }
   right.appendChild(el("div", { class: "product-detail-price" }, shown.price));
   right.appendChild(el("div", { class: "product-modal-self" }, L.self));
   right.appendChild(buildPriceTiers(shown.price));
