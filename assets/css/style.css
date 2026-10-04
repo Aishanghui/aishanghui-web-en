@@ -397,3 +397,33 @@ body {
   .cart-subtotal { grid-column: 3 / 4; grid-row: 2; align-self: center; }
   .cart-remove { grid-column: 3 / 4; grid-row: 1; justify-self: end; }
 }
+
+/* ---------- 1688 风格商品详情页 ---------- */
+.product-detail-left .gallery-main { display: block; width: 100%; height: 380px; object-fit: contain; background: #fff; border-radius: var(--radius); }
+.gallery-thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.gallery-thumb { width: 62px; height: 62px; object-fit: cover; border: 2px solid transparent; border-radius: 8px; cursor: pointer; background: #fff; }
+.gallery-thumb.active { border-color: var(--brand); }
+.detail-meta { font-size: 13.5px; color: var(--ink); margin: 4px 0; }
+.detail-meta-label { color: var(--muted); }
+.detail-link { margin: 10px 0 4px; text-decoration: none; display: inline-flex; }
+.sku-selector { margin: 8px 0 4px; }
+.sku-selector-group { margin-bottom: 10px; }
+.sku-selector-label { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+.sku-selector-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.sku-option { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; cursor: pointer; font-size: 13px; color: var(--ink); }
+.sku-option img { width: 30px; height: 30px; object-fit: cover; border-radius: 6px; }
+.sku-option.selected { border-color: var(--brand); color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
+.attr-table { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 4px; }
+.attr-row { display: grid; grid-template-columns: 120px 1fr; border-bottom: 1px solid var(--line); }
+.attr-row:last-child { border-bottom: none; }
+.attr-key { padding: 8px 10px; background: #f6f7fb; color: var(--muted); font-size: 13px; }
+.attr-val { padding: 8px 10px; color: var(--ink); font-size: 13px; word-break: break-word; }
+.product-description { margin-top: 10px; line-height: 1.7; color: var(--ink); word-break: break-word; }
+.product-description img { max-width: 100%; height: auto; border-radius: 8px; }
+.pay-methods { margin: 14px 0; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fafbff; }
+.pay-method-item { margin: 6px 0; }
+.pay-method-label { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.pay-method-text { font-size: 14px; color: var(--ink); word-break: break-all; }
+.pay-qr-item { margin: 8px 0; }
+.pay-qr-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
