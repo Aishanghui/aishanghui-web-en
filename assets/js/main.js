@@ -16,7 +16,7 @@ var SITE_CONFIG = {
     alipayName: "AiShangHui", // 支付宝实名
     bankName: "招商银行",      // 开户行
     bankCard: "6214833341920117",      // 银行卡号
-    bankHolder: "",    // 户名（待确认）
+    bankHolder: "赵超凡",    // 户名（待确认）
     wechatQr: "assets/img/pay/wechat.jpg",      // 微信收款码图片 URL
     alipayQr: "assets/img/pay/alipay.jpg"       // 支付宝收款码图片 URL
   }
