@@ -11,11 +11,12 @@ var SITE_CONFIG = {
   email: "19325116173@163.com",
   phone: "+86 193 2511 6173",
   payment: {
+    paypalNote: "PayPal: contact us for the receiving account. Visa / Mastercard / Amex accepted via PayPal.",
+    cardNote: "Visa / Mastercard / American Express / JCB",
     bankName: "China Merchants Bank (招商银行)",
     bankCard: "6214833341920117",
     bankHolder: "Zhao Chaofan (赵超凡)",
-    wireNote: "For international wire transfer, please contact us for the SWIFT/BIC code.",
-    paypalNote: "PayPal account: please contact us to confirm the receiving account."
+    wireNote: "CMBCCNBS"
   }
 };
 
@@ -756,6 +757,7 @@ function productLabels() {
       payBank: "银行卡转账",
       payWire: "跨境电汇",
       payPaypal: "PayPal",
+      payCard: "信用卡/借记卡",
       payHint: "支付完成后，请扫码或转账，我们会尽快为您发货。",
       payAfterSubmit: "请扫描下方收款码支付，支付后我们会按地址尽快发货。",
       skuSelect: "请选择规格",
@@ -804,6 +806,7 @@ function productLabels() {
   payBank: "Bank Transfer",
   payWire: "International Wire Transfer",
   payPaypal: "PayPal",
+  payCard: "Credit / Debit Card",
   payHint: "Pay via the methods below. We will ship after your payment is confirmed.",
   payAfterSubmit: "Please complete payment using one of the methods below.",
   attrOrigin: { "产地": "Origin", "品牌": "Brand", "材质": "Material", "货号": "Item No." }
@@ -960,6 +963,20 @@ function buildPayMethods(L) {
     ar.appendChild(el("div", { class: "pay-method-text" }, pay.alipay + (pay.alipayName ? "（" + pay.alipayName + "）" : "")));
     box.appendChild(ar);
   }
+  if (pay.paypalNote) {
+    has = true;
+    var pp = el("div", { class: "pay-method-item" });
+    pp.appendChild(el("div", { class: "pay-method-label" }, L.payPaypal));
+    pp.appendChild(el("div", { class: "pay-method-note" }, pay.paypalNote));
+    box.appendChild(pp);
+  }
+  if (pay.cardNote) {
+    has = true;
+    var cd = el("div", { class: "pay-method-item" });
+    cd.appendChild(el("div", { class: "pay-method-label" }, L.payCard));
+    cd.appendChild(el("div", { class: "pay-method-note" }, pay.cardNote));
+    box.appendChild(cd);
+  }
   if (pay.bankCard) {
     has = true;
     var br = el("div", { class: "pay-method-item" });
@@ -968,15 +985,8 @@ function buildPayMethods(L) {
     if (pay.bankHolder) bv += "（" + pay.bankHolder + "）";
     br.appendChild(el("div", { class: "pay-method-label" }, (pay.wireNote && L.payWire) ? L.payWire : L.payBank));
     br.appendChild(el("div", { class: "pay-method-text" }, bv));
-    if (pay.wireNote) br.appendChild(el("div", { class: "pay-method-note" }, pay.wireNote));
+    if (pay.wireNote) br.appendChild(el("div", { class: "pay-method-note" }, "SWIFT/BIC: " + pay.wireNote));
     box.appendChild(br);
-  }
-  if (pay.paypalNote) {
-    has = true;
-    var pp = el("div", { class: "pay-method-item" });
-    pp.appendChild(el("div", { class: "pay-method-label" }, L.payPaypal));
-    pp.appendChild(el("div", { class: "pay-method-note" }, pay.paypalNote));
-    box.appendChild(pp);
   }
   if (!has) return null;
   return box;
@@ -1264,6 +1274,8 @@ function buildContact(t) {
   if (pay.wechatQr) payRows.push({ icon: "💬", label: (zh ? "微信收款码" : "WeChat Pay QR"), qr: pay.wechatQr });
   if (pay.alipayQr) payRows.push({ icon: "💚", label: (zh ? "支付宝收款码" : "Alipay QR"), qr: pay.alipayQr });
   if (pay.alipay) payRows.push({ icon: "💚", label: t.contact.payAlipay, value: pay.alipay + (pay.alipayName ? "（" + pay.alipayName + "）" : "") });
+  if (pay.paypalNote) payRows.push({ icon: "💳", label: "PayPal", value: pay.paypalNote });
+  if (pay.cardNote) payRows.push({ icon: "💳", label: "Credit / Debit Card", value: pay.cardNote });
   if (pay.bankCard) {
     var bankVal = pay.bankCard;
     if (pay.bankName) bankVal = pay.bankName + " · " + bankVal;
@@ -1272,7 +1284,6 @@ function buildContact(t) {
     payRows.push({ icon: "🏦", label: bankLabel, value: bankVal });
     if (pay.wireNote) payRows.push({ icon: "🏦", label: "SWIFT / BIC", value: pay.wireNote });
   }
-  if (pay.paypalNote) payRows.push({ icon: "💳", label: "PayPal", value: pay.paypalNote });
   if (payRows.length) {
     info.appendChild(el("h3", { class: "pay-title" }, t.contact.payTitle));
     payRows.forEach(function (pr) {
