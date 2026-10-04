@@ -495,6 +495,7 @@ function productShown(it, ov) {
   var white = ov.white || it.white || "";
   var video = ov.video || it.video || "";
   var usage = ov.usage || it.usage || "";
+  var link = ov.link || it.link || "";
   var skus = it.skus || [];
   var images = [];
   if (ov.image) images = String(ov.image).split(",");
@@ -506,7 +507,7 @@ function productShown(it, ov) {
     usage: usage, skus: skus,
     supplier: it.supplier || "", moq: it.moq || "",
     attributes: it.attributes || {}, description: it.description || "",
-    link: it.link || ""
+    link: link
   };
 }
 
@@ -631,6 +632,7 @@ function buildAdminRow(key, it, ov, cat) {
   var white = ov.white || it.white || "";
   var video = ov.video || it.video || "";
   var usage = ov.usage || it.usage || "";
+  var link = ov.link || it.link || "";
   var prev = el("img", { class: "admin-preview", alt: "预览" });
   var imgIn = el("input", { class: "admin-field admin-img", type: "text", value: image || "", placeholder: "图片URL（可填网址，或点右侧选择图片上传）" });
   var fileIn = el("input", { class: "admin-field admin-file", type: "file", accept: "image/*", title: "选择图片上传" });
@@ -640,6 +642,7 @@ function buildAdminRow(key, it, ov, cat) {
   var whiteIn = el("input", { class: "admin-field admin-white", type: "text", value: white, placeholder: "白底图URL" });
   var videoIn = el("input", { class: "admin-field admin-video", type: "text", value: video, placeholder: "视频URL" });
   var usageIn = el("textarea", { class: "admin-field admin-usage", rows: "2", placeholder: "使用说明" }, usage || "");
+  var linkIn = el("input", { class: "admin-field admin-link", type: "text", value: link, placeholder: "1688原链接（仅后台可见）" });
   var save = el("button", { class: "btn btn-primary admin-save", type: "button" }, "保存");
   var del = el("button", { class: "btn admin-del", type: "button" }, "还原");
 
@@ -667,7 +670,8 @@ function buildAdminRow(key, it, ov, cat) {
       sku: skuIn.value.trim(),
       white: whiteIn.value.trim(),
       video: videoIn.value.trim(),
-      usage: usageIn.value.trim()
+      usage: usageIn.value.trim(),
+      link: linkIn.value.trim()
     };
     if (saveOverrides(o)) { toast("已保存"); render(); }
     else { toast("保存失败：图片过大，请压缩后重试或改用图片网址"); }
@@ -688,6 +692,7 @@ function buildAdminRow(key, it, ov, cat) {
   row.appendChild(whiteIn);
   row.appendChild(videoIn);
   row.appendChild(usageIn);
+  row.appendChild(linkIn);
   row.appendChild(save);
   row.appendChild(del);
   return row;
@@ -971,10 +976,18 @@ function buildProductPage(catIdx, itemIdx) {
 
   var left = el("div", { class: "product-detail-left" });
   left.appendChild(buildGalleryWithThumbs(shown, cat));
+  if (shown.video) {
+    left.appendChild(el("div", { class: "product-modal-block-label" }, L.video));
+    left.appendChild(el("video", { class: "product-modal-video", controls: "controls", src: shown.video }));
+  }
   var specs = buildAttrTable(shown.attributes);
-  if (specs) {
+  if (specs || shown.white) {
     left.appendChild(el("div", { class: "product-modal-block-label product-specs-title" }, L.specs));
-    left.appendChild(specs);
+    if (specs) left.appendChild(specs);
+    if (shown.white) {
+      left.appendChild(el("div", { class: "product-modal-block-label" }, L.white));
+      left.appendChild(el("img", { class: "product-modal-white", src: shown.white, alt: L.white }));
+    }
   }
 
   var right = el("div", { class: "product-detail-right" });
@@ -1011,22 +1024,10 @@ function buildProductPage(catIdx, itemIdx) {
   actions.appendChild(add);
   right.appendChild(actions);
 
-  if (shown.white) {
-    right.appendChild(el("div", { class: "product-modal-block-label" }, L.white));
-    right.appendChild(el("img", { class: "product-modal-white", src: shown.white, alt: L.white }));
-  }
-  if (shown.video) {
-    right.appendChild(el("div", { class: "product-modal-block-label" }, L.video));
-    right.appendChild(el("video", { class: "product-modal-video", controls: "controls", src: shown.video }));
-  }
   if (shown.usage) {
     right.appendChild(el("div", { class: "product-modal-block-label" }, L.usage));
     right.appendChild(el("div", { class: "product-modal-usage" }, shown.usage));
   }
-  if (shown.link) {
-    right.appendChild(el("a", { class: "btn btn-ghost detail-link", href: shown.link, target: "_blank", rel: "noopener noreferrer" }, L.view1688));
-  }
-
   layout.appendChild(left);
   layout.appendChild(right);
   c.appendChild(layout);
@@ -1137,7 +1138,6 @@ function buildCartPage() {
       var unit = Math.round(p.num * rate * 100) / 100;
       var line = Math.round(unit * it.qty * 100) / 100;
       lines.push((shown.sku || shown.name) + " × " + it.qty + " = " + p.cur + line);
-      if (item.link) lines.push((zh ? "1688采购链接：" : "1688 source: ") + item.link);
     });
     lines.push("");
     lines.push((zh ? "收货人：" : "Name: ") + nameIn.value.trim());
