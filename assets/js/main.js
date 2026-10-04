@@ -14,10 +14,11 @@ var SITE_CONFIG = {
   payment: {
     alipay: "19325116173",  // 支付宝收款账号（手机号/邮箱）
     alipayName: "AiShangHui", // 支付宝实名
-    bankName: "",      // 开户行（如：中国工商银行）
-    bankCard: "",      // 银行卡号
-    bankHolder: "",    // 户名
-    qrImage: ""        // 收款码图片 URL
+    bankName: "招商银行",      // 开户行
+    bankCard: "6214833341920117",      // 银行卡号
+    bankHolder: "",    // 户名（待确认）
+    wechatQr: "assets/img/pay/wechat.jpg",      // 微信收款码图片 URL
+    alipayQr: "assets/img/pay/alipay.jpg"       // 支付宝收款码图片 URL
   }
 };
 
@@ -503,19 +504,16 @@ function productShown(it, ov) {
   else if (it.images && it.images.length) images = it.images;
   else if (it.image) images = [it.image];
   images = images.map(function (s) { return String(s).trim(); }).filter(Boolean);
-  return { name: name, price: price, images: images, sku: sku, white: white, video: video, usage: usage, skus: skus };
+  return {
+    name: name, price: price, images: images, sku: sku, white: white, video: video,
+    usage: usage, skus: skus,
+    supplier: it.supplier || "", moq: it.moq || "",
+    attributes: it.attributes || {}, description: it.description || "",
+    link: it.link || ""
+  };
 }
 
-function collectSkuImages(skus) {
-  var out = [];
-  (skus || []).forEach(function (g) {
-    if (!g || !g.values) return;
-    g.values.forEach(function (v) {
-      if (v && v.image) out.push({ name: v.name || g.name || "", image: v.image });
-    });
-  });
-  return out;
-}
+
 
 function buildGallery(it, cat) {
   var imgs = (it.images && it.images.length) ? it.images : [];
@@ -678,7 +676,17 @@ function productLabels() {
       orderSent: "订单已生成，请通过邮件完成下单，我们会尽快与您联系。",
       fillRequired: "请填写收货人、电话和地址。",
       continueShopping: "去逛逛",
-      remove: "移除"
+      remove: "移除",
+      supplier: "供应商",
+      moq: "起订量",
+      specs: "规格参数",
+      details: "商品详情",
+      view1688: "1688 原链接",
+      payTitle: "支付方式",
+      payWechat: "微信收款码",
+      payAlipay: "支付宝收款码",
+      payBank: "银行卡转账",
+      skuSelect: "请选择规格"
     };
   }
   return {
@@ -764,6 +772,112 @@ function getCatsData() {
   return { lang: lang, cats: cats || [] };
 }
 
+function buildSkuSelector(skus) {
+  var groups = (skus || []).filter(function (g) {
+    return g && g.values && g.values.length;
+  });
+  if (!groups.length) return null;
+  var box = el("div", { class: "sku-selector" });
+  groups.forEach(function (g) {
+    var gBox = el("div", { class: "sku-selector-group" });
+    gBox.appendChild(el("div", { class: "sku-selector-label" }, g.name || ""));
+    var opts = el("div", { class: "sku-selector-options" });
+    g.values.forEach(function (v) {
+      var btn = el("button", { class: "sku-option", type: "button" });
+      if (v.image) btn.appendChild(el("img", { src: v.image, alt: v.name || "", loading: "lazy" }));
+      btn.appendChild(el("span", {}, v.name || ""));
+      btn.addEventListener("click", function () {
+        var all = gBox.querySelectorAll(".sku-option");
+        for (var i = 0; i < all.length; i++) all[i].classList.remove("selected");
+        btn.classList.add("selected");
+      });
+      opts.appendChild(btn);
+    });
+    gBox.appendChild(opts);
+    box.appendChild(gBox);
+  });
+  return box;
+}
+
+function buildAttrTable(attributes) {
+  var keys = Object.keys(attributes || {});
+  if (!keys.length) return null;
+  var box = el("div", { class: "attr-table" });
+  keys.forEach(function (k) {
+    var row = el("div", { class: "attr-row" });
+    row.appendChild(el("div", { class: "attr-key" }, k));
+    row.appendChild(el("div", { class: "attr-val" }, String(attributes[k])));
+    box.appendChild(row);
+  });
+  return box;
+}
+
+function buildGalleryWithThumbs(it, cat) {
+  var imgs = (it.images && it.images.length) ? it.images : [];
+  var wrap = el("div", { class: "product-gallery" });
+  if (!imgs.length) {
+    wrap.appendChild(el("div", { class: "gallery-slide gallery-placeholder" }, cat.icon || "🛍️"));
+    return wrap;
+  }
+  var main = el("img", { class: "gallery-main", src: imgs[0], alt: it.name || "product" });
+  wrap.appendChild(main);
+  if (imgs.length > 1) {
+    var strip = el("div", { class: "gallery-thumbs" });
+    imgs.forEach(function (src, i) {
+      var t = el("img", { class: "gallery-thumb" + (i === 0 ? " active" : ""), src: src, alt: "", loading: "lazy" });
+      t.addEventListener("click", function () {
+        main.src = src;
+        var all = strip.querySelectorAll(".gallery-thumb");
+        for (var j = 0; j < all.length; j++) all[j].classList.remove("active");
+        t.classList.add("active");
+      });
+      strip.appendChild(t);
+    });
+    wrap.appendChild(strip);
+  }
+  return wrap;
+}
+
+function buildPayMethods(L) {
+  var pay = SITE_CONFIG.payment || {};
+  var has = false;
+  var box = el("div", { class: "pay-methods" });
+  box.appendChild(el("div", { class: "product-modal-block-label" }, L.payTitle));
+  if (pay.wechatQr) {
+    has = true;
+    var w = el("div", { class: "pay-method-item" });
+    w.appendChild(el("div", { class: "pay-method-label" }, L.payWechat));
+    w.appendChild(el("img", { class: "pay-qr", src: pay.wechatQr, alt: L.payWechat }));
+    box.appendChild(w);
+  }
+  if (pay.alipayQr) {
+    has = true;
+    var a = el("div", { class: "pay-method-item" });
+    a.appendChild(el("div", { class: "pay-method-label" }, L.payAlipay));
+    a.appendChild(el("img", { class: "pay-qr", src: pay.alipayQr, alt: L.payAlipay }));
+    box.appendChild(a);
+  }
+  if (pay.alipay) {
+    has = true;
+    var ar = el("div", { class: "pay-method-item" });
+    ar.appendChild(el("div", { class: "pay-method-label" }, L.payAlipay));
+    ar.appendChild(el("div", { class: "pay-method-text" }, pay.alipay + (pay.alipayName ? "（" + pay.alipayName + "）" : "")));
+    box.appendChild(ar);
+  }
+  if (pay.bankCard) {
+    has = true;
+    var br = el("div", { class: "pay-method-item" });
+    var bv = pay.bankCard;
+    if (pay.bankName) bv = pay.bankName + " · " + bv;
+    if (pay.bankHolder) bv += "（" + pay.bankHolder + "）";
+    br.appendChild(el("div", { class: "pay-method-label" }, L.payBank));
+    br.appendChild(el("div", { class: "pay-method-text" }, bv));
+    box.appendChild(br);
+  }
+  if (!has) return null;
+  return box;
+}
+
 function buildProductPage(catIdx, itemIdx) {
   var c = container();
   var data = getCatsData();
@@ -780,26 +894,32 @@ function buildProductPage(catIdx, itemIdx) {
   var layout = el("div", { class: "product-detail-grid" });
 
   var left = el("div", { class: "product-detail-left" });
-  left.appendChild(buildGallery(shown, cat));
+  left.appendChild(buildGalleryWithThumbs(shown, cat));
 
   var right = el("div", { class: "product-detail-right" });
   right.appendChild(el("span", { class: "product-modal-stock" }, L.stock));
   right.appendChild(el("h1", { class: "product-detail-name" }, shown.name));
-  if (shown.sku) right.appendChild(el("div", { class: "product-modal-sku" }, L.sku + "：" + shown.sku));
-  var skuThumbs = collectSkuImages(shown.skus);
-  if (skuThumbs.length) {
-    var skuWrap = el("div", { class: "product-sku-thumbs" });
-    skuThumbs.forEach(function (s) {
-      var t = el("div", { class: "sku-thumb" });
-      t.appendChild(el("img", { src: s.image, alt: s.name, loading: "lazy" }));
-      if (s.name) t.appendChild(el("span", {}, s.name));
-      skuWrap.appendChild(t);
-    });
-    right.appendChild(skuWrap);
-  }
+
   right.appendChild(el("div", { class: "product-detail-price" }, shown.price));
   right.appendChild(el("div", { class: "product-modal-self" }, L.self));
   right.appendChild(buildPriceTiers(shown.price));
+
+  if (shown.supplier) {
+    var sup = el("div", { class: "detail-meta" });
+    sup.appendChild(el("span", { class: "detail-meta-label" }, L.supplier + "："));
+    sup.appendChild(el("span", {}, shown.supplier));
+    right.appendChild(sup);
+  }
+  if (shown.moq) {
+    var moq = el("div", { class: "detail-meta" });
+    moq.appendChild(el("span", { class: "detail-meta-label" }, L.moq + "："));
+    moq.appendChild(el("span", {}, shown.moq));
+    right.appendChild(moq);
+  }
+
+  if (shown.sku) right.appendChild(el("div", { class: "product-modal-sku" }, L.sku + "：" + shown.sku));
+  var sel = buildSkuSelector(shown.skus);
+  if (sel) right.appendChild(sel);
 
   var actions = el("div", { class: "product-detail-actions" });
   var buy = el("button", { class: "btn btn-primary", type: "button" }, L.buyNow);
@@ -809,6 +929,12 @@ function buildProductPage(catIdx, itemIdx) {
   actions.appendChild(buy);
   actions.appendChild(add);
   right.appendChild(actions);
+
+  var attrs = buildAttrTable(shown.attributes);
+  if (attrs) {
+    right.appendChild(el("div", { class: "product-modal-block-label" }, L.specs));
+    right.appendChild(attrs);
+  }
 
   if (shown.white) {
     right.appendChild(el("div", { class: "product-modal-block-label" }, L.white));
@@ -822,10 +948,19 @@ function buildProductPage(catIdx, itemIdx) {
     right.appendChild(el("div", { class: "product-modal-block-label" }, L.usage));
     right.appendChild(el("div", { class: "product-modal-usage" }, shown.usage));
   }
+  if (shown.link) {
+    right.appendChild(el("a", { class: "btn btn-ghost detail-link", href: shown.link, target: "_blank", rel: "noopener noreferrer" }, L.view1688));
+  }
 
   layout.appendChild(left);
   layout.appendChild(right);
   c.appendChild(layout);
+
+  if (shown.description) {
+    c.appendChild(el("h2", { class: "section-title" }, L.details));
+    c.appendChild(el("div", { class: "product-description", html: shown.description }));
+  }
+
   return section("product", "detail-page", c);
 }
 
@@ -902,6 +1037,9 @@ function buildCartPage() {
   var summary = el("div", { class: "cart-summary" });
   summary.appendChild(el("div", { class: "cart-total" }, L.total + "：" + cur + String(Math.round(total * 100) / 100)));
   c.appendChild(summary);
+
+  var payMethods = buildPayMethods(L);
+  if (payMethods) c.appendChild(payMethods);
 
   var form = el("form", { class: "cart-checkout" });
   var nameIn = el("input", { class: "field", type: "text", placeholder: L.recvName });
@@ -1041,8 +1179,10 @@ function buildContact(t) {
   info.appendChild(row("🕒", t.contact.hours, t.contact.hoursVal));
 
   var pay = SITE_CONFIG.payment || {};
+  var zh = currentLang === "zh";
   var payRows = [];
-  if (pay.qrImage) payRows.push({ icon: "📱", label: t.contact.payQr, qr: pay.qrImage });
+  if (pay.wechatQr) payRows.push({ icon: "💬", label: (zh ? "微信收款码" : "WeChat Pay QR"), qr: pay.wechatQr });
+  if (pay.alipayQr) payRows.push({ icon: "💚", label: (zh ? "支付宝收款码" : "Alipay QR"), qr: pay.alipayQr });
   if (pay.alipay) payRows.push({ icon: "💚", label: t.contact.payAlipay, value: pay.alipay + (pay.alipayName ? "（" + pay.alipayName + "）" : "") });
   if (pay.bankCard) {
     var bankVal = pay.bankCard;
@@ -1054,7 +1194,10 @@ function buildContact(t) {
     info.appendChild(el("h3", { class: "pay-title" }, t.contact.payTitle));
     payRows.forEach(function (pr) {
       if (pr.qr) {
-        info.appendChild(el("img", { class: "pay-qr", src: pr.qr, alt: t.contact.payQr }));
+        var qrBox = el("div", { class: "pay-qr-item" });
+        qrBox.appendChild(el("img", { class: "pay-qr", src: pr.qr, alt: pr.label }));
+        qrBox.appendChild(el("div", { class: "pay-qr-label" }, pr.label));
+        info.appendChild(qrBox);
         return;
       }
       info.appendChild(row(pr.icon, pr.label, pr.value));
