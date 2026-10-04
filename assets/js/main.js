@@ -11,7 +11,8 @@ var SITE_CONFIG = {
   email: "19325116173@163.com",
   phone: "+86 193 2511 6173",
   payment: {
-    paypalNote: "PayPal: contact us for the receiving account. Visa / Mastercard / Amex accepted via PayPal.",
+    paypalNote: "PayPal: 19325116173@163.com (Visa / Mastercard / Amex)",
+    paypalLink: "https://www.paypal.com/myaccount/transfer/send",
     cardNote: "Visa / Mastercard / American Express / JCB",
     bankName: "China Merchants Bank (招商银行)",
     bankCard: "6214833341920117",
@@ -968,6 +969,9 @@ function buildPayMethods(L) {
     var pp = el("div", { class: "pay-method-item" });
     pp.appendChild(el("div", { class: "pay-method-label" }, L.payPaypal));
     pp.appendChild(el("div", { class: "pay-method-note" }, pay.paypalNote));
+    if (pay.paypalLink) {
+      pp.appendChild(el("a", { class: "btn btn-primary", href: pay.paypalLink, target: "_blank", rel: "noopener" }, "Pay with PayPal"));
+    }
     box.appendChild(pp);
   }
   if (pay.cardNote) {
