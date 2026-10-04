@@ -70,7 +70,7 @@ var currentItemIdx = 0;
 var view = currentViewFromHash();
 
 /* ---------- 商品数据覆盖（本地管理编辑，localStorage 持久化） ---------- */
-var PRODUCT_OVERRIDES_KEY = "ASH_PRODUCT_OVERRIDES";
+var PRODUCT_OVERRIDES_KEY = "ASH_PRODUCT_OVERRIDES_v2";
 var isAdmin = (function () {
   try { return new URLSearchParams(location.search).get("admin") === "1"; } catch (e) { return false; }
 })();
