@@ -540,7 +540,7 @@ function buildGallery(it, cat) {
 }
 
 function listAttrChips(shown, L) {
-  var order = ["产地", "品牌", "材质", "规格", "货号"];
+  var order = ["产地", "品牌", "材质", "货号"];
   var labels = L.attrOrigin || {};
   var chips = [];
   var attrs = shown.attributes || {};
@@ -738,7 +738,7 @@ function productLabels() {
       payBank: "银行卡转账",
       skuSelect: "请选择规格",
       viewProduct: "查看商品详情",
-      attrOrigin: { "产地": "产地", "品牌": "品牌", "材质": "材质", "规格": "规格", "货号": "货号" }
+      attrOrigin: { "产地": "产地", "品牌": "品牌", "材质": "材质", "货号": "货号" }
     };
   }
   return {
@@ -776,7 +776,7 @@ function productLabels() {
   details: "Details",
   view1688: "View on 1688",
   viewProduct: "View Details",
-  attrOrigin: { "产地": "Origin", "品牌": "Brand", "材质": "Material", "规格": "Spec", "货号": "Item No." }
+  attrOrigin: { "产地": "Origin", "品牌": "Brand", "材质": "Material", "货号": "Item No." }
   };
 }
 
