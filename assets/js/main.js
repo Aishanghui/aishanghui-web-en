@@ -539,6 +539,63 @@ function buildGallery(it, cat) {
   return wrap;
 }
 
+function listAttrChips(shown, L) {
+  var order = ["产地", "品牌", "材质", "规格", "货号"];
+  var labels = L.attrOrigin || {};
+  var chips = [];
+  var attrs = shown.attributes || {};
+  order.forEach(function (k) {
+    var v = attrs[k];
+    if (!v) return;
+    v = String(v).trim();
+    if (!v) return;
+    var label = (labels[k] ? labels[k] + "：" : "");
+    chips.push(label + v);
+  });
+  return chips;
+}
+
+function buildProductListCard(shown, cat, idx, itemIdx) {
+  var L = productLabels();
+  var card = el("div", { class: "wholesale-product-card product-card-list product-click" });
+  var imgWrap = el("div", { class: "pl-thumb" });
+  var firstImg = (shown.images && shown.images[0]) || shown.white || "";
+  if (firstImg) {
+    imgWrap.appendChild(el("img", { class: "pl-thumb-img", src: firstImg, alt: shown.name || "product", loading: "lazy" }));
+  } else {
+    imgWrap.appendChild(el("span", { class: "pl-thumb-ph" }, cat.icon || "🛍️"));
+  }
+  card.appendChild(imgWrap);
+
+  var body = el("div", { class: "pl-body" });
+  body.appendChild(el("div", { class: "pl-name" }, shown.name));
+
+  var meta = [];
+  if (shown.supplier) meta.push(L.supplier + "：" + shown.supplier);
+  if (shown.moq) meta.push(L.moq + "：" + shown.moq);
+  if (meta.length) body.appendChild(el("div", { class: "pl-meta" }, meta.join("　")));
+
+  var chips = listAttrChips(shown, L);
+  if (chips.length) {
+    var chipBox = el("div", { class: "pl-chips" });
+    chips.slice(0, 3).forEach(function (c) {
+      chipBox.appendChild(el("span", { class: "pl-chip" }, c));
+    });
+    body.appendChild(chipBox);
+  }
+
+  if (shown.sku) body.appendChild(el("div", { class: "pl-sku" }, L.sku + "：" + shown.sku));
+
+  var right = el("div", { class: "pl-right" });
+  if (shown.price) right.appendChild(el("div", { class: "pl-price" }, shown.price));
+  right.appendChild(el("div", { class: "pl-more" }, L.viewProduct));
+
+  card.appendChild(body);
+  card.appendChild(right);
+  card.addEventListener("click", function () { showProduct(idx, itemIdx); });
+  return card;
+}
+
 function buildCategory(idx, t) {
   var c = container();
   var data = getCatsData();
@@ -561,14 +618,7 @@ function buildCategory(idx, t) {
       return;
     }
     var shown = productShown(it, ov);
-    var card = el("div", { class: "wholesale-product-card product-click" });
-    card.appendChild(buildGallery(shown, cat));
-    var body = el("div", { class: "wholesale-product-body" });
-    body.appendChild(el("div", { class: "wholesale-product-name" }, shown.name));
-    body.appendChild(el("div", { class: "wholesale-product-price" }, shown.price));
-    card.appendChild(body);
-    card.addEventListener("click", function () { showProduct(idx, itemIdx); });
-    list.appendChild(card);
+    list.appendChild(buildProductListCard(shown, cat, idx, itemIdx));
   });
   c.appendChild(list);
   return section("cat", "wholesale", c);
@@ -686,7 +736,9 @@ function productLabels() {
       payWechat: "微信收款码",
       payAlipay: "支付宝收款码",
       payBank: "银行卡转账",
-      skuSelect: "请选择规格"
+      skuSelect: "请选择规格",
+      viewProduct: "查看商品详情",
+      attrOrigin: { "产地": "产地", "品牌": "品牌", "材质": "材质", "规格": "规格", "货号": "货号" }
     };
   }
   return {
@@ -717,7 +769,14 @@ function productLabels() {
     orderSent: "Order created. Please complete via email; we will contact you shortly.",
     fillRequired: "Please fill in name, phone and address.",
     continueShopping: "Continue shopping",
-    remove: "Remove"
+    remove: "Remove",
+  supplier: "Supplier",
+  moq: "MOQ",
+  specs: "Specifications",
+  details: "Details",
+  view1688: "View on 1688",
+  viewProduct: "View Details",
+  attrOrigin: { "产地": "Origin", "品牌": "Brand", "材质": "Material", "规格": "Spec", "货号": "Item No." }
   };
 }
 
