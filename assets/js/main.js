@@ -803,9 +803,8 @@ function parsePrice(s) {
 var PRICE_TIERS = [
   { q: 1, rate: 1, off: "" },
   { q: 2, rate: 0.9, off: "-10%" },
-  { q: 3, rate: 0.85, off: "-15%" },
-  { q: 4, rate: 0.8, off: "-20%" },
-  { q: 100, rate: 0.6, off: "-40%" }
+  { q: 5, rate: 0.6, off: "-40%" },
+  { q: 50, rate: 0.6, off: "-40%" }
 ];
 
 function tierRate(qty) {
@@ -823,10 +822,9 @@ function buildPriceTiers(priceStr) {
   PRICE_TIERS.forEach(function (r) {
     var qty;
     if (r.q === 1) qty = zh ? "1件" : "1 pc";
-    else if (r.q === 2) qty = zh ? "2件" : "2 pcs";
-    else if (r.q === 3) qty = zh ? "3件" : "3 pcs";
-    else if (r.q === 4) qty = zh ? "4件及以上" : "4+ pcs";
-    else qty = zh ? "100件以上" : "100+ pcs";
+    else if (r.q === 2) qty = zh ? "2件及以上" : "2+ pcs";
+    else if (r.q === 5) qty = zh ? "5件及以上" : "5+ pcs";
+    else qty = zh ? "50件及以上" : "50+ pcs";
     var row = el("div", { class: "price-tier-row" });
     row.appendChild(el("span", { class: "price-tier-qty" }, qty));
     if (r.off) row.appendChild(el("span", { class: "price-tier-off" }, r.off));
