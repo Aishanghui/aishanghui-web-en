@@ -10,15 +10,12 @@ var SITE_CONFIG = {
   wechat: "wxid_bzgv0cn5l16922",
   email: "19325116173@163.com",
   phone: "+86 193 2511 6173",
-  formEndpoint: "https://formsubmit.co/ajax/19325116173@163.com",
   payment: {
-    alipay: "19325116173",  // 支付宝收款账号（手机号/邮箱）
-    alipayName: "AiShangHui", // 支付宝实名
-    bankName: "招商银行",      // 开户行
-    bankCard: "6214833341920117",      // 银行卡号
-    bankHolder: "赵超凡",    // 户名（待确认）
-    wechatQr: "assets/img/pay/wechat.jpg",      // 微信收款码图片 URL
-    alipayQr: "assets/img/pay/alipay.jpg"       // 支付宝收款码图片 URL
+    bankName: "China Merchants Bank (招商银行)",
+    bankCard: "6214833341920117",
+    bankHolder: "Zhao Chaofan (赵超凡)",
+    wireNote: "For international wire transfer, please contact us for the SWIFT/BIC code.",
+    paypalNote: "PayPal account: please contact us to confirm the receiving account."
   }
 };
 
@@ -723,7 +720,7 @@ function productLabels() {
       submitOrder: "提交订单",
       copyDropship: "复制代发信息",
       copied: "已复制，可粘贴给代发平台下单",
-      orderSent: "订单已生成，请通过邮件完成下单，我们会尽快与您联系。",
+      orderSent: "订单已生成，请完成支付，我们会尽快与您联系。",
       fillRequired: "请填写收货人、电话和地址。",
       continueShopping: "去逛逛",
       remove: "移除",
@@ -736,6 +733,10 @@ function productLabels() {
       payWechat: "微信收款码",
       payAlipay: "支付宝收款码",
       payBank: "银行卡转账",
+      payWire: "跨境电汇",
+      payPaypal: "PayPal",
+      payHint: "支付完成后，请扫码或转账，我们会尽快为您发货。",
+      payAfterSubmit: "请扫描下方收款码支付，支付后我们会按地址尽快发货。",
       skuSelect: "请选择规格",
       viewProduct: "查看商品详情",
       attrOrigin: { "产地": "产地", "品牌": "品牌", "材质": "材质", "货号": "货号" }
@@ -766,7 +767,7 @@ function productLabels() {
     submitOrder: "Place Order",
     copyDropship: "Copy Dropship Info",
     copied: "Copied. Paste it to your dropship platform to fulfill.",
-    orderSent: "Order created. Please complete via email; we will contact you shortly.",
+    orderSent: "Order created. Please complete payment to finish your order.",
     fillRequired: "Please fill in name, phone and address.",
     continueShopping: "Continue shopping",
     remove: "Remove",
@@ -776,6 +777,14 @@ function productLabels() {
   details: "Details",
   view1688: "View on 1688",
   viewProduct: "View Details",
+  payTitle: "Payment",
+  payWechat: "WeChat Pay",
+  payAlipay: "Alipay",
+  payBank: "Bank Transfer",
+  payWire: "International Wire Transfer",
+  payPaypal: "PayPal",
+  payHint: "Pay via the methods below. We will ship after your payment is confirmed.",
+  payAfterSubmit: "Please complete payment using one of the methods below.",
   attrOrigin: { "产地": "Origin", "品牌": "Brand", "材质": "Material", "货号": "Item No." }
   };
 }
@@ -929,9 +938,17 @@ function buildPayMethods(L) {
     var bv = pay.bankCard;
     if (pay.bankName) bv = pay.bankName + " · " + bv;
     if (pay.bankHolder) bv += "（" + pay.bankHolder + "）";
-    br.appendChild(el("div", { class: "pay-method-label" }, L.payBank));
+    br.appendChild(el("div", { class: "pay-method-label" }, (pay.wireNote && L.payWire) ? L.payWire : L.payBank));
     br.appendChild(el("div", { class: "pay-method-text" }, bv));
+    if (pay.wireNote) br.appendChild(el("div", { class: "pay-method-note" }, pay.wireNote));
     box.appendChild(br);
+  }
+  if (pay.paypalNote) {
+    has = true;
+    var pp = el("div", { class: "pay-method-item" });
+    pp.appendChild(el("div", { class: "pay-method-label" }, L.payPaypal));
+    pp.appendChild(el("div", { class: "pay-method-note" }, pay.paypalNote));
+    box.appendChild(pp);
   }
   if (!has) return null;
   return box;
@@ -954,6 +971,11 @@ function buildProductPage(catIdx, itemIdx) {
 
   var left = el("div", { class: "product-detail-left" });
   left.appendChild(buildGalleryWithThumbs(shown, cat));
+  var specs = buildAttrTable(shown.attributes);
+  if (specs) {
+    left.appendChild(el("div", { class: "product-modal-block-label product-specs-title" }, L.specs));
+    left.appendChild(specs);
+  }
 
   var right = el("div", { class: "product-detail-right" });
   right.appendChild(el("span", { class: "product-modal-stock" }, L.stock));
@@ -988,12 +1010,6 @@ function buildProductPage(catIdx, itemIdx) {
   actions.appendChild(buy);
   actions.appendChild(add);
   right.appendChild(actions);
-
-  var attrs = buildAttrTable(shown.attributes);
-  if (attrs) {
-    right.appendChild(el("div", { class: "product-modal-block-label" }, L.specs));
-    right.appendChild(attrs);
-  }
 
   if (shown.white) {
     right.appendChild(el("div", { class: "product-modal-block-label" }, L.white));
@@ -1097,9 +1113,6 @@ function buildCartPage() {
   summary.appendChild(el("div", { class: "cart-total" }, L.total + "：" + cur + String(Math.round(total * 100) / 100)));
   c.appendChild(summary);
 
-  var payMethods = buildPayMethods(L);
-  if (payMethods) c.appendChild(payMethods);
-
   var form = el("form", { class: "cart-checkout" });
   var nameIn = el("input", { class: "field", type: "text", placeholder: L.recvName });
   var phoneIn = el("input", { class: "field", type: "text", placeholder: L.recvPhone });
@@ -1156,38 +1169,21 @@ function buildCartPage() {
       status.classList.add("show");
       return;
     }
-    var body = orderText();
-    if (SITE_CONFIG.formEndpoint) {
-      status.textContent = currentLang === "zh" ? "提交中…" : "Submitting…";
-      status.classList.add("show");
-      fetch(SITE_CONFIG.formEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          _subject: (zh ? "爱商汇订单" : "AiShangHui Order") + " - " + nameIn.value.trim(),
-          _template: "table",
-          name: nameIn.value.trim(),
-          phone: phoneIn.value.trim(),
-          address: addrIn.value.trim(),
-          note: noteIn.value.trim(),
-          order: body,
-          lang: currentLang
-        })
-      }).then(function (r) {
-        if (r.ok) { status.textContent = L.orderSent; }
-        else { status.textContent = currentLang === "zh" ? "提交失败，请直接邮件下单。" : "Submit failed, please email us directly."; }
-      }).catch(function () {
-        status.textContent = currentLang === "zh" ? "提交失败，请直接邮件下单。" : "Submit failed, please email us directly.";
-      });
-      return;
-    }
-    var subject = (zh ? "爱商汇订单 - " : "AiShangHui Order - ") + nameIn.value.trim();
-    location.href = "mailto:" + SITE_CONFIG.email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-    status.textContent = L.orderSent;
+    var payMethods = document.querySelector(".cart-page .pay-methods");
+    if (payMethods) payMethods.scrollIntoView({ behavior: "smooth", block: "center" });
+    status.textContent = L.payAfterSubmit || L.orderSent;
     status.classList.add("show");
   });
 
   c.appendChild(form);
+
+  var payMethods = buildPayMethods(L);
+  if (payMethods) {
+    var payHint = el("div", { class: "pay-methods-hint" }, L.payHint);
+    c.appendChild(payHint);
+    c.appendChild(payMethods);
+  }
+
   return section("cart", "cart-page", c);
 }
 
@@ -1247,8 +1243,11 @@ function buildContact(t) {
     var bankVal = pay.bankCard;
     if (pay.bankName) bankVal = pay.bankName + " · " + bankVal;
     if (pay.bankHolder) bankVal += "（" + pay.bankHolder + "）";
-    payRows.push({ icon: "🏦", label: t.contact.payBank, value: bankVal });
+    var bankLabel = pay.wireNote ? "International Wire Transfer" : t.contact.payBank;
+    payRows.push({ icon: "🏦", label: bankLabel, value: bankVal });
+    if (pay.wireNote) payRows.push({ icon: "🏦", label: "SWIFT / BIC", value: pay.wireNote });
   }
+  if (pay.paypalNote) payRows.push({ icon: "💳", label: "PayPal", value: pay.paypalNote });
   if (payRows.length) {
     info.appendChild(el("h3", { class: "pay-title" }, t.contact.payTitle));
     payRows.forEach(function (pr) {
