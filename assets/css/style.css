@@ -444,4 +444,7 @@ body {
 .pay-method-text { font-size: 14px; color: var(--ink); word-break: break-all; }
 .pay-qr-item { margin: 8px 0; }
 .pay-qr-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.pay-method-note { font-size: 13px; color: var(--muted); margin-top: 4px; word-break: break-word; }
+.pay-methods-hint { font-size: 14px; color: var(--ink); font-weight: 600; margin: 4px 0 8px; }
+.product-detail-left .product-specs-title { margin-top: 18px; }
 
