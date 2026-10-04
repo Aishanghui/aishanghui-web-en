@@ -110,12 +110,25 @@ function cartCount() {
   cart.forEach(function (it) { n += it.qty; });
   return n;
 }
+function minQtyFor(it) {
+  var data = getCatsData();
+  var cat = data.cats[it.catIdx];
+  var item = cat && cat.items && cat.items[it.itemIdx];
+  return (item && item.moqNum) ? item.moqNum : 1;
+}
 function setCartQty(it, delta) {
   var cart = loadCart();
   var idx = cartIndexOf(cart, it);
   if (idx < 0) return;
-  cart[idx].qty += delta;
-  if (cart[idx].qty < 1) cart.splice(idx, 1);
+  var min = minQtyFor(it);
+  var next = cart[idx].qty + delta;
+  if (min > 1) {
+    if (next < min) next = min;
+    cart[idx].qty = next;
+  } else {
+    cart[idx].qty = next;
+    if (cart[idx].qty < 1) cart.splice(idx, 1);
+  }
   saveCart(cart);
   render();
 }
@@ -507,7 +520,10 @@ function productShown(it, ov) {
     usage: usage, skus: skus,
     supplier: it.supplier || "", moq: it.moq || "",
     attributes: it.attributes || {}, description: it.description || "",
-    link: link
+    link: link,
+    moqNum: it.moqNum || 0,
+    unit: it.unit || "",
+    tiers: it.tiers || null
   };
 }
 
@@ -807,24 +823,33 @@ var PRICE_TIERS = [
   { q: 50, rate: 0.6, off: "-40%" }
 ];
 
-function tierRate(qty) {
+function tierRate(qty, tiers) {
+  var list = tiers && tiers.length ? tiers : PRICE_TIERS;
   var rate = 1;
-  for (var i = 0; i < PRICE_TIERS.length; i++) {
-    if (qty >= PRICE_TIERS[i].q) rate = PRICE_TIERS[i].rate;
+  for (var i = 0; i < list.length; i++) {
+    if (qty >= list[i].q) rate = list[i].rate;
   }
   return rate;
 }
 
-function buildPriceTiers(priceStr) {
+function buildPriceTiers(priceStr, shown) {
   var p = parsePrice(priceStr);
   var zh = currentLang === "zh";
   var box = el("div", { class: "price-tiers" });
-  PRICE_TIERS.forEach(function (r) {
+  var custom = shown && shown.tiers && shown.tiers.length;
+  var list = custom ? shown.tiers : PRICE_TIERS;
+  list.forEach(function (r, i) {
     var qty;
-    if (r.q === 1) qty = zh ? "1件" : "1 pc";
-    else if (r.q === 2) qty = zh ? "2件及以上" : "2+ pcs";
-    else if (r.q === 5) qty = zh ? "5件及以上" : "5+ pcs";
-    else qty = zh ? "50件及以上" : "50+ pcs";
+    if (custom) {
+      var u = (shown.unit || "") || (zh ? "件" : "pcs");
+      if (i === 0) qty = zh ? (r.q + u + "起订") : (r.q + " " + u + " (MOQ)");
+      else qty = zh ? (r.q + u + "及以上") : (r.q + "+ " + u);
+    } else {
+      if (r.q === 1) qty = zh ? "1件" : "1 pc";
+      else if (r.q === 2) qty = zh ? "2件及以上" : "2+ pcs";
+      else if (r.q === 5) qty = zh ? "5件及以上" : "5+ pcs";
+      else qty = zh ? "50件及以上" : "50+ pcs";
+    }
     var row = el("div", { class: "price-tier-row" });
     row.appendChild(el("span", { class: "price-tier-qty" }, qty));
     if (r.off) row.appendChild(el("span", { class: "price-tier-off" }, r.off));
@@ -994,7 +1019,7 @@ function buildProductPage(catIdx, itemIdx) {
 
   right.appendChild(el("div", { class: "product-detail-price" }, shown.price));
   right.appendChild(el("div", { class: "product-modal-self" }, L.self));
-  right.appendChild(buildPriceTiers(shown.price));
+  right.appendChild(buildPriceTiers(shown.price, shown));
 
   if (shown.supplier) {
     var sup = el("div", { class: "detail-meta" });
@@ -1014,10 +1039,11 @@ function buildProductPage(catIdx, itemIdx) {
   if (sel) right.appendChild(sel);
 
   var actions = el("div", { class: "product-detail-actions" });
+  var addQty = shown.moqNum || 1;
   var buy = el("button", { class: "btn btn-primary", type: "button" }, L.buyNow);
-  buy.addEventListener("click", function () { addToCart(catIdx, itemIdx, 1); showCart(); });
+  buy.addEventListener("click", function () { addToCart(catIdx, itemIdx, addQty); showCart(); });
   var add = el("button", { class: "btn btn-ghost", type: "button" }, L.addToCart);
-  add.addEventListener("click", function () { addToCart(catIdx, itemIdx, 1); toast(L.added); updateCartBadge(); });
+  add.addEventListener("click", function () { addToCart(catIdx, itemIdx, addQty); toast(L.added); updateCartBadge(); });
   actions.appendChild(buy);
   actions.appendChild(add);
   right.appendChild(actions);
@@ -1070,7 +1096,7 @@ function buildCartPage() {
     var shown = productShown(item, overrides[key] || {});
     var p = parsePrice(shown.price);
     cur = cur || p.cur;
-    var rate = tierRate(it.qty);
+    var rate = tierRate(it.qty, shown.tiers);
     var unit = Math.round(p.num * rate * 100) / 100;
     var line = Math.round(unit * it.qty * 100) / 100;
     total += line;
@@ -1090,11 +1116,12 @@ function buildCartPage() {
     row.appendChild(info);
 
     var qty = el("div", { class: "cart-qty" });
+    var step = shown.moqNum || 1;
     var minus = el("button", { class: "qty-btn", type: "button" }, "−");
     var num = el("span", { class: "qty-num" }, String(it.qty));
     var plus = el("button", { class: "qty-btn", type: "button" }, "+");
-    minus.addEventListener("click", function () { setCartQty(it, -1); });
-    plus.addEventListener("click", function () { setCartQty(it, 1); });
+    minus.addEventListener("click", function () { setCartQty(it, -step); });
+    plus.addEventListener("click", function () { setCartQty(it, step); });
     qty.appendChild(minus); qty.appendChild(num); qty.appendChild(plus);
     row.appendChild(qty);
 
@@ -1132,7 +1159,7 @@ function buildCartPage() {
       var key = data.lang + ":" + it.catIdx + ":" + it.itemIdx;
       var shown = productShown(item, overrides[key] || {});
       var p = parsePrice(shown.price);
-      var rate = tierRate(it.qty);
+      var rate = tierRate(it.qty, shown.tiers);
       var unit = Math.round(p.num * rate * 100) / 100;
       var line = Math.round(unit * it.qty * 100) / 100;
       lines.push((shown.sku || shown.name) + " × " + it.qty + " = " + p.cur + line);
