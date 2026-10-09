@@ -866,9 +866,14 @@ function buildPriceTiers(priceStr, shown) {
 
 function getCatsData() {
   var pl = window.PRODUCTS || {};
+  var enPl = (window.PRODUCTS_EN && window.PRODUCTS_EN.en) ? window.PRODUCTS_EN : null;
   var lang = (currentLang === "zh" && pl.zh) ? "zh" : "en";
-  var cats = (pl[lang] && pl[lang].categories) ? pl[lang].categories : (pl.en && pl.en.categories);
-  if (!cats || !cats.length || typeof cats[0] === "string") cats = (pl.en && pl.en.categories);
+  var cats = (lang === "zh")
+    ? ((pl.zh && pl.zh.categories) || (pl.en && pl.en.categories))
+    : ((enPl && enPl.en && enPl.en.categories) || (pl.en && pl.en.categories));
+  if (!cats || !cats.length || typeof cats[0] === "string") {
+    cats = (enPl && enPl.en && enPl.en.categories) || (pl.en && pl.en.categories);
+  }
   return { lang: lang, cats: cats || [] };
 }
 
