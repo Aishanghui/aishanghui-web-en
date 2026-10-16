@@ -885,7 +885,10 @@ function ashLoadCat(lang, ci, cb) {
   var files = m.files || [];
   var pending = files.length;
   var v = window.ASH_VER ? ("?v=" + window.ASH_VER) : "";
+  var done = false;
   function finish() {
+    if (done) return;
+    done = true;
     var parts = window.__ASHX || [];
     var items = [];
     for (var i = 0; i < parts.length; i++) { if (parts[i].ci === ci) items = items.concat(parts[i].items || []); }
@@ -904,6 +907,7 @@ function ashLoadCat(lang, ci, cb) {
     s.onerror = function () { pending--; if (pending <= 0) finish(); };
     document.body.appendChild(s);
   });
+  setTimeout(finish, 15000);
 }
 
 function getCatsData() {
