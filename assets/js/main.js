@@ -489,7 +489,7 @@ function buildWholesale(t) {
     var card = el("a", { class: "wholesale-cat-card", href: "#wholesale/" + catIdx });
     card.appendChild(el("div", { class: "wholesale-cat-icon" }, cat.icon || "🛍️"));
     card.appendChild(el("div", { class: "wholesale-cat-name" }, cat.name || ""));
-    var count = (cat.items && cat.items.length) || 0;
+    var count = cat.count || ((cat.items && cat.items.length) || 0);
     card.appendChild(el("div", { class: "wholesale-cat-count" }, count + (currentLang === "zh" ? " 件商品" : " items")));
     card.addEventListener("click", function (e) { e.preventDefault(); showCategory(catIdx); });
     grid.appendChild(card);
@@ -864,17 +864,67 @@ function buildPriceTiers(priceStr, shown) {
   return box;
 }
 
-function getCatsData() {
-  var pl = window.PRODUCTS || {};
-  var enPl = (window.PRODUCTS_EN && window.PRODUCTS_EN.en) ? window.PRODUCTS_EN : null;
-  var lang = (currentLang === "zh" && pl.zh) ? "zh" : "en";
-  var cats = (lang === "zh")
-    ? ((pl.zh && pl.zh.categories) || (pl.en && pl.en.categories))
-    : ((enPl && enPl.en && enPl.en.categories) || (pl.en && pl.en.categories));
-  if (!cats || !cats.length || typeof cats[0] === "string") {
-    cats = (enPl && enPl.en && enPl.en.categories) || (pl.en && pl.en.categories);
+var ASH_ITEMS = {};
+var ASH_LOADING = {};
+var ASH_QUEUE = {};
+
+function ashLang() {
+  var m = window.ASH_MANIFEST || {};
+  return (m.zh && m.zh.length) ? "zh" : "en";
+}
+
+function ashLoadCat(lang, ci, cb) {
+  var man = (window.ASH_MANIFEST || {})[lang] || [];
+  var m = man[ci];
+  if (!m) { cb([]); return; }
+  var key = lang + ":" + ci;
+  if (ASH_ITEMS[key]) { cb(ASH_ITEMS[key]); return; }
+  (ASH_QUEUE[key] = ASH_QUEUE[key] || []).push(cb);
+  if (ASH_LOADING[key]) return;
+  ASH_LOADING[key] = true;
+  var files = m.files || [];
+  var pending = files.length;
+  var v = window.ASH_VER ? ("?v=" + window.ASH_VER) : "";
+  function finish() {
+    var parts = window.__ASHX || [];
+    var items = [];
+    for (var i = 0; i < parts.length; i++) { if (parts[i].ci === ci) items = items.concat(parts[i].items || []); }
+    window.__ASHX = (window.__ASHX || []).filter(function (p) { return p.ci !== ci; });
+    ASH_ITEMS[key] = items;
+    ASH_LOADING[key] = false;
+    var q = ASH_QUEUE[key] || [];
+    ASH_QUEUE[key] = [];
+    for (var j = 0; j < q.length; j++) q[j](items);
   }
-  return { lang: lang, cats: cats || [] };
+  if (!pending) { finish(); return; }
+  files.forEach(function (f) {
+    var s = document.createElement("script");
+    s.src = "assets/data/" + f + v;
+    s.onload = function () { pending--; if (pending <= 0) finish(); };
+    s.onerror = function () { pending--; if (pending <= 0) finish(); };
+    document.body.appendChild(s);
+  });
+}
+
+function getCatsData() {
+  var man = window.ASH_MANIFEST || {};
+  var lang = (man.zh && man.zh.length) ? "zh" : "en";
+  var list = man[lang] || [];
+  if (!list.length) {
+    var pl = window.PRODUCTS || {};
+    var enPl = (window.PRODUCTS_EN && window.PRODUCTS_EN.en) ? window.PRODUCTS_EN : null;
+    var oldCats = (lang === "zh")
+      ? ((pl.zh && pl.zh.categories) || (pl.en && pl.en.categories))
+      : ((enPl && enPl.en && enPl.en.categories) || (pl.en && pl.en.categories));
+    if (!oldCats || !oldCats.length || typeof oldCats[0] === "string") {
+      oldCats = (enPl && enPl.en && enPl.en.categories) || (pl.en && pl.en.categories);
+    }
+    return { lang: lang, cats: oldCats || [] };
+  }
+  var cats = list.map(function (m, i) {
+    return { name: m.name, icon: m.icon, count: m.count, items: ASH_ITEMS[lang + ":" + i] || [] };
+  });
+  return { lang: lang, cats: cats };
 }
 
 function buildSkuSelector(skus) {
@@ -1418,6 +1468,26 @@ function render() {
     ["payTitle", "payAlipay", "payAlipayName", "payBank", "payBankName", "payBankCard", "payBankHolder", "payQr"].forEach(function (k) {
       if (t.contact && !t.contact[k]) t.contact[k] = (en.contact && en.contact[k]) || "";
     });
+  }
+
+  var __needCat = -1;
+  var __lang = ashLang();
+  if (view === "cat" || view === "product") {
+    __needCat = currentCatIdx;
+  } else if (view === "cart") {
+    var __cart = loadCart();
+    for (var __k = 0; __k < __cart.length; __k++) {
+      var __c = __cart[__k].catIdx;
+      if (!ASH_ITEMS[__lang + ":" + __c]) { __needCat = __c; break; }
+    }
+  }
+  if (__needCat >= 0 && !ASH_ITEMS[__lang + ":" + __needCat]) {
+    var app = document.getElementById("app");
+    app.innerHTML = "";
+    app.appendChild(buildHeader(t));
+    app.appendChild(el("div", { class: "container", style: "padding-top:80px;text-align:center;color:#5b6173;" }, currentLang === "zh" ? "商品加载中…" : "Loading products…"));
+    ashLoadCat(__lang, __needCat, function () { render(); });
+    return;
   }
 
   document.documentElement.lang = currentLang;
