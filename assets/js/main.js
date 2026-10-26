@@ -612,6 +612,64 @@ function buildProductListCard(shown, cat, idx, itemIdx) {
   return card;
 }
 
+function strHash(s) {
+  s = String(s || "");
+  var h = 5381;
+  for (var i = 0; i < s.length; i++) { h = ((h << 5) + h + s.charCodeAt(i)) >>> 0; }
+  return h;
+}
+var TTK_PALETTES = [
+  ["#f472b6", "#fb7185"], ["#38bdf8", "#6366f1"], ["#34d399", "#0ea5e9"],
+  ["#fbbf24", "#f97316"], ["#a78bfa", "#ec4899"], ["#22d3ee", "#3b82f6"],
+  ["#fb7185", "#f43f5e"], ["#4ade80", "#16a34a"], ["#f97316", "#e11d48"]
+];
+function ttkImage(shown, cat) {
+  if (shown.images && shown.images.length) return String(shown.images[0]);
+  var icon = (cat && cat.icon) || "🛍️";
+  var seed = strHash(shown.name || icon);
+  var pal = TTK_PALETTES[seed % TTK_PALETTES.length];
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">' +
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+    '<stop offset="0" stop-color="' + pal[0] + '"/><stop offset="1" stop-color="' + pal[1] + '"/>' +
+    '</linearGradient></defs>' +
+    '<rect width="400" height="400" fill="url(#g)"/>' +
+    '<text x="200" y="218" font-size="150" text-anchor="middle">' + icon + '</text>' +
+    '<text x="200" y="382" font-size="30" font-family="sans-serif" font-weight="700" fill="rgba(255,255,255,0.85)" text-anchor="middle">AiShangHui</text>' +
+    '</svg>';
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+function ttkMeta(shown) {
+  var h = strHash(shown.name);
+  return { sold: 100 + (h % 9800), rating: (4.5 + (h % 5) / 10).toFixed(1), hot: (h % 4) === 0 };
+}
+function buildTtkCard(catIdx, itemIdx, it, ov, cat) {
+  var L = productLabels();
+  var shown = productShown(it, ov || {});
+  var meta = ttkMeta(shown);
+  var card = el("div", { class: "ttk-card" });
+  var media = el("div", { class: "ttk-media" });
+  media.appendChild(el("img", { class: "ttk-img", src: ttkImage(shown, cat), alt: shown.name, loading: "lazy" }));
+  if (meta.hot) media.appendChild(el("span", { class: "ttk-badge-hot" }, L.hot));
+  media.appendChild(el("span", { class: "ttk-badge-rating" }, "★ " + meta.rating));
+  var cartBtn = el("button", { class: "ttk-cart-btn", type: "button", "aria-label": L.addToCart }, "🛒");
+  cartBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    addToCart(catIdx, itemIdx, 1);
+    toast(L.added);
+    updateCartBadge();
+  });
+  media.appendChild(cartBtn);
+  var body = el("div", { class: "ttk-body" });
+  body.appendChild(el("div", { class: "ttk-price" }, shown.price));
+  var soldTxt = currentLang === "zh" ? (L.sold + " " + meta.sold + " 件") : (meta.sold + " " + L.sold);
+  body.appendChild(el("div", { class: "ttk-sold" }, soldTxt));
+  body.appendChild(el("div", { class: "ttk-name" }, shown.name));
+  card.appendChild(media);
+  card.appendChild(body);
+  card.addEventListener("click", function () { showProduct(catIdx, itemIdx); });
+  return card;
+}
+
 function buildCategory(idx, t) {
   var c = container();
   var data = getCatsData();
@@ -625,7 +683,7 @@ function buildCategory(idx, t) {
   c.appendChild(sectionHead({ title: catName }, null));
 
   var overrides = loadOverrides();
-  var list = el("div", { class: "wholesale-cat-products" });
+  var list = el("div", { class: "wholesale-cat-products" + (isAdmin ? "" : " ttk-grid") });
   (cat.items || []).forEach(function (it, itemIdx) {
     var key = data.lang + ":" + idx + ":" + itemIdx;
     var ov = overrides[key] || {};
@@ -633,8 +691,7 @@ function buildCategory(idx, t) {
       list.appendChild(buildAdminRow(key, it, ov, cat));
       return;
     }
-    var shown = productShown(it, ov);
-    list.appendChild(buildProductListCard(shown, cat, idx, itemIdx));
+    list.appendChild(buildTtkCard(idx, itemIdx, it, ov, cat));
   });
   c.appendChild(list);
   return section("cat", "wholesale", c);
@@ -763,6 +820,8 @@ function productLabels() {
       payAfterSubmit: "请扫描下方收款码支付，支付后我们会按地址尽快发货。",
       skuSelect: "请选择规格",
       viewProduct: "查看商品详情",
+      hot: "热卖",
+      sold: "已售",
       attrOrigin: { "产地": "产地", "品牌": "品牌", "材质": "材质", "货号": "货号" }
     };
   }
@@ -810,6 +869,8 @@ function productLabels() {
   payCard: "Credit / Debit Card",
   payHint: "Pay via the methods below. We will ship after your payment is confirmed.",
   payAfterSubmit: "Please complete payment using one of the methods below.",
+  hot: "Hot",
+  sold: "sold",
   attrOrigin: { "产地": "Origin", "品牌": "Brand", "材质": "Material", "货号": "Item No." }
   };
 }
