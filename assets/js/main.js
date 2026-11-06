@@ -11,13 +11,8 @@ var SITE_CONFIG = {
   email: "19325116173@163.com",
   phone: "+86 193 2511 6173",
   payment: {
-    paypalNote: "PayPal: 19325116173@163.com (Visa / Mastercard / Amex)",
-    paypalLink: "https://www.paypal.com/myaccount/transfer/send",
-    cardNote: "Visa / Mastercard / American Express / JCB",
-    bankName: "China Merchants Bank (招商银行)",
-    bankCard: "6214833341920117",
-    bankHolder: "Zhao Chaofan (赵超凡)",
-    wireNote: "CMBCCNBS"
+    wechatQr: "assets/img/pay/wechat.jpg",      // 微信收款码图片 URL
+    alipayQr: "assets/img/pay/alipay.jpg"       // 支付宝收款码图片 URL
   }
 };
 
@@ -798,9 +793,7 @@ function productLabels() {
       recvAddr: "收货地址",
       recvNote: "备注（选填）",
       submitOrder: "提交订单",
-      copyDropship: "复制代发信息",
-      copied: "已复制，可粘贴给代发平台下单",
-      orderSent: "订单已生成，请完成支付，我们会尽快与您联系。",
+      orderSent: "订单已提交，请选择支付方式完成支付。",
       fillRequired: "请填写收货人、电话和地址。",
       continueShopping: "去逛逛",
       remove: "移除",
@@ -810,14 +803,15 @@ function productLabels() {
       details: "商品详情",
       view1688: "1688 原链接",
       payTitle: "支付方式",
-      payWechat: "微信收款码",
-      payAlipay: "支付宝收款码",
+      payWechat: "微信支付",
+      payAlipay: "支付宝",
       payBank: "银行卡转账",
       payWire: "跨境电汇",
       payPaypal: "PayPal",
       payCard: "信用卡/借记卡",
-      payHint: "支付完成后，请扫码或转账，我们会尽快为您发货。",
-      payAfterSubmit: "请扫描下方收款码支付，支付后我们会按地址尽快发货。",
+      payHint: "请选择支付方式并完成支付，我们会尽快为您发货。",
+      payAfterSubmit: "订单已提交，请选择下方支付方式完成支付。",
+      dropshipNote: "本店支持 1688 一件代发：下单后店主将通过逸淘在 1688 找货，由 1688 商家直接发货。",
       skuSelect: "请选择规格",
       viewProduct: "查看商品详情",
       hot: "热卖",
@@ -848,9 +842,7 @@ function productLabels() {
     recvAddr: "Shipping address",
     recvNote: "Note (optional)",
     submitOrder: "Place Order",
-    copyDropship: "Copy Dropship Info",
-    copied: "Copied. Paste it to your dropship platform to fulfill.",
-    orderSent: "Order created. Please complete payment to finish your order.",
+    orderSent: "Order submitted. Please choose a payment method below.",
     fillRequired: "Please fill in name, phone and address.",
     continueShopping: "Continue shopping",
     remove: "Remove",
@@ -867,8 +859,9 @@ function productLabels() {
   payWire: "International Wire Transfer",
   payPaypal: "PayPal",
   payCard: "Credit / Debit Card",
-  payHint: "Pay via the methods below. We will ship after your payment is confirmed.",
-  payAfterSubmit: "Please complete payment using one of the methods below.",
+  payHint: "Please choose a payment method and complete payment. We will ship shortly after.",
+  payAfterSubmit: "Order submitted. Please choose a payment method below.",
+  dropshipNote: "This shop supports 1688 dropshipping: after you order, the owner sources the item on 1688 via Yitao and the 1688 supplier ships directly.",
   hot: "Hot",
   sold: "sold",
   attrOrigin: { "产地": "Origin", "品牌": "Brand", "材质": "Material", "货号": "Item No." }
@@ -1060,59 +1053,49 @@ function buildGalleryWithThumbs(it, cat) {
 
 function buildPayMethods(L) {
   var pay = SITE_CONFIG.payment || {};
-  var has = false;
+  var zh = currentLang === "zh";
+  var methods = [];
+  if (pay.wechatQr) methods.push({ key: "wechat", label: L.payWechat, qr: pay.wechatQr, logo: zh ? "微" : "W" });
+  if (pay.alipayQr) methods.push({ key: "alipay", label: L.payAlipay, qr: pay.alipayQr, logo: zh ? "支" : "A" });
+  if (!methods.length) return null;
+
   var box = el("div", { class: "pay-methods" });
-  box.appendChild(el("div", { class: "product-modal-block-label" }, L.payTitle));
-  if (pay.wechatQr) {
-    has = true;
-    var w = el("div", { class: "pay-method-item" });
-    w.appendChild(el("div", { class: "pay-method-label" }, L.payWechat));
-    w.appendChild(el("img", { class: "pay-qr", src: pay.wechatQr, alt: L.payWechat }));
-    box.appendChild(w);
-  }
-  if (pay.alipayQr) {
-    has = true;
-    var a = el("div", { class: "pay-method-item" });
-    a.appendChild(el("div", { class: "pay-method-label" }, L.payAlipay));
-    a.appendChild(el("img", { class: "pay-qr", src: pay.alipayQr, alt: L.payAlipay }));
-    box.appendChild(a);
-  }
-  if (pay.alipay) {
-    has = true;
-    var ar = el("div", { class: "pay-method-item" });
-    ar.appendChild(el("div", { class: "pay-method-label" }, L.payAlipay));
-    ar.appendChild(el("div", { class: "pay-method-text" }, pay.alipay + (pay.alipayName ? "（" + pay.alipayName + "）" : "")));
-    box.appendChild(ar);
-  }
-  if (pay.paypalNote) {
-    has = true;
-    var pp = el("div", { class: "pay-method-item" });
-    pp.appendChild(el("div", { class: "pay-method-label" }, L.payPaypal));
-    pp.appendChild(el("div", { class: "pay-method-note" }, pay.paypalNote));
-    if (pay.paypalLink) {
-      pp.appendChild(el("a", { class: "btn btn-primary", href: pay.paypalLink, target: "_blank", rel: "noopener" }, "Pay with PayPal"));
+  box.appendChild(el("div", { class: "pay-methods-title" }, L.payTitle));
+
+  var list = el("div", { class: "pay-method-list" });
+  var qrBox = el("div", { class: "pay-method-qr" });
+
+  function renderQr(m) {
+    qrBox.innerHTML = "";
+    if (m.qr) {
+      qrBox.appendChild(el("div", { class: "pay-method-label" }, m.label));
+      qrBox.appendChild(el("img", { class: "pay-qr", src: m.qr, alt: m.label }));
     }
-    box.appendChild(pp);
   }
-  if (pay.cardNote) {
-    has = true;
-    var cd = el("div", { class: "pay-method-item" });
-    cd.appendChild(el("div", { class: "pay-method-label" }, L.payCard));
-    cd.appendChild(el("div", { class: "pay-method-note" }, pay.cardNote));
-    box.appendChild(cd);
-  }
-  if (pay.bankCard) {
-    has = true;
-    var br = el("div", { class: "pay-method-item" });
-    var bv = pay.bankCard;
-    if (pay.bankName) bv = pay.bankName + " · " + bv;
-    if (pay.bankHolder) bv += "（" + pay.bankHolder + "）";
-    br.appendChild(el("div", { class: "pay-method-label" }, (pay.wireNote && L.payWire) ? L.payWire : L.payBank));
-    br.appendChild(el("div", { class: "pay-method-text" }, bv));
-    if (pay.wireNote) br.appendChild(el("div", { class: "pay-method-note" }, "SWIFT/BIC: " + pay.wireNote));
-    box.appendChild(br);
-  }
-  if (!has) return null;
+
+  methods.forEach(function (m) {
+    var card = el("div", { class: "pay-method-card" + (m.key === "wechat" ? " active" : "") });
+    card.setAttribute("role", "radio");
+    card.setAttribute("aria-checked", m.key === "wechat" ? "true" : "false");
+    card.appendChild(el("span", { class: "pay-method-logo pay-logo-" + m.key }, m.logo));
+    card.appendChild(el("span", { class: "pay-method-name" }, m.label));
+    card.appendChild(el("span", { class: "pay-method-check" }, "✓"));
+    card.addEventListener("click", function () {
+      var all = list.querySelectorAll(".pay-method-card");
+      for (var i = 0; i < all.length; i++) {
+        all[i].classList.remove("active");
+        all[i].setAttribute("aria-checked", "false");
+      }
+      card.classList.add("active");
+      card.setAttribute("aria-checked", "true");
+      renderQr(m);
+    });
+    list.appendChild(card);
+  });
+  box.appendChild(list);
+  box.appendChild(qrBox);
+  renderQr(methods[0]);
+
   return box;
 }
 
@@ -1283,43 +1266,18 @@ function buildCartPage() {
   form.appendChild(addrIn);
   form.appendChild(noteIn);
 
-  function orderText() {
-    var lines = [];
-    lines.push(zh ? "【爱商汇订单】" : "[AiShangHui Order]");
-    cart.forEach(function (it) {
-      var cat = data.cats[it.catIdx];
-      var item = cat && cat.items && cat.items[it.itemIdx];
-      if (!item) return;
-      var key = data.lang + ":" + it.catIdx + ":" + it.itemIdx;
-      var shown = productShown(item, overrides[key] || {});
-      var p = parsePrice(shown.price);
-      var rate = tierRate(it.qty, shown.tiers);
-      var unit = Math.round(p.num * rate * 100) / 100;
-      var line = Math.round(unit * it.qty * 100) / 100;
-      lines.push((shown.sku || shown.name) + " × " + it.qty + " = " + p.cur + line);
-    });
-    lines.push("");
-    lines.push((zh ? "收货人：" : "Name: ") + nameIn.value.trim());
-    lines.push((zh ? "电话：" : "Phone: ") + phoneIn.value.trim());
-    lines.push((zh ? "地址：" : "Address: ") + addrIn.value.trim());
-    if (noteIn.value.trim()) lines.push((zh ? "备注：" : "Note: ") + noteIn.value.trim());
-    return lines.join("\n");
-  }
-
   var status = el("div", { class: "form-status" });
   var submit = el("button", { class: "btn btn-primary", type: "submit" }, L.submitOrder);
-  var copyBtn = el("button", { class: "btn btn-ghost", type: "button" }, L.copyDropship);
   form.appendChild(submit);
-  form.appendChild(copyBtn);
   form.appendChild(status);
 
-  copyBtn.addEventListener("click", function () {
-    var text = orderText();
-    function fallback() { window.prompt(L.copyDropship, text); toast(L.copied); }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { toast(L.copied); }, fallback);
-    } else { fallback(); }
-  });
+  var payWrap = el("div", { class: "pay-wrap" });
+  var payMethods = buildPayMethods(L);
+  if (payMethods) {
+    payWrap.appendChild(el("div", { class: "pay-methods-hint" }, L.payHint));
+    payWrap.appendChild(payMethods);
+    if (L.dropshipNote) payWrap.appendChild(el("div", { class: "pay-dropship-note" }, L.dropshipNote));
+  }
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -1328,20 +1286,16 @@ function buildCartPage() {
       status.classList.add("show");
       return;
     }
-    var payMethods = document.querySelector(".cart-page .pay-methods");
-    if (payMethods) payMethods.scrollIntoView({ behavior: "smooth", block: "center" });
+    payWrap.classList.add("show");
     status.textContent = L.payAfterSubmit || L.orderSent;
     status.classList.add("show");
+    setTimeout(function () {
+      if (payWrap.classList.contains("show")) payWrap.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 60);
   });
 
   c.appendChild(form);
-
-  var payMethods = buildPayMethods(L);
-  if (payMethods) {
-    var payHint = el("div", { class: "pay-methods-hint" }, L.payHint);
-    c.appendChild(payHint);
-    c.appendChild(payMethods);
-  }
+  c.appendChild(payWrap);
 
   return section("cart", "cart-page", c);
 }
