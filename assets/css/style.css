@@ -446,6 +446,36 @@ body {
 .pay-qr-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
 .pay-method-note { font-size: 13px; color: var(--muted); margin-top: 4px; word-break: break-word; }
 .pay-methods-hint { font-size: 14px; color: var(--ink); font-weight: 600; margin: 4px 0 8px; }
+
+/* ---------- 结算：提交订单后支付方式（抖店样式） ---------- */
+.pay-wrap { display: none; }
+.pay-wrap.show { display: block; margin-top: 18px; }
+.pay-methods-title { font-size: 16px; font-weight: 800; color: var(--ink); margin-bottom: 12px; }
+.pay-method-list { display: flex; gap: 12px; }
+.pay-method-card {
+  flex: 1; display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px; border: 2px solid var(--line); border-radius: 12px;
+  background: #fff; cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease;
+}
+.pay-method-card:hover { border-color: #c7cbe0; }
+.pay-method-card.active { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
+.pay-method-logo {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800; font-size: 14px; flex: none;
+}
+.pay-logo-wechat { background: #07c160; }
+.pay-logo-alipay { background: #1677ff; }
+.pay-method-name { font-weight: 700; font-size: 15px; color: var(--ink); flex: 1; }
+.pay-method-check { display: none; color: var(--brand); font-weight: 800; }
+.pay-method-card.active .pay-method-check { display: inline; }
+.pay-method-qr { margin-top: 16px; text-align: center; }
+.pay-method-qr .pay-qr { width: 220px; height: 220px; }
+.pay-dropship-note {
+  margin-top: 14px; padding: 10px 12px;
+  background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px;
+  color: var(--muted); font-size: 13px; line-height: 1.6;
+}
 .product-detail-left .product-specs-title { margin-top: 18px; }
 
 .ttk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-top: 8px; }
