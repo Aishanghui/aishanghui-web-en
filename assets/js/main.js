@@ -805,6 +805,9 @@ function productLabels() {
       payTitle: "支付方式",
       payWechat: "微信支付",
       payAlipay: "支付宝",
+      payRecommended: "推荐",
+      payWechatDesc: "微信安全支付",
+      payAlipayDesc: "支付宝支付",
       payBank: "银行卡转账",
       payWire: "跨境电汇",
       payPaypal: "PayPal",
@@ -855,6 +858,9 @@ function productLabels() {
   payTitle: "Payment",
   payWechat: "WeChat Pay",
   payAlipay: "Alipay",
+  payRecommended: "Recommended",
+  payWechatDesc: "Secure WeChat Pay",
+  payAlipayDesc: "Alipay",
   payBank: "Bank Transfer",
   payWire: "International Wire Transfer",
   payPaypal: "PayPal",
@@ -1055,8 +1061,8 @@ function buildPayMethods(L) {
   var pay = SITE_CONFIG.payment || {};
   var zh = currentLang === "zh";
   var methods = [];
-  if (pay.wechatQr) methods.push({ key: "wechat", label: L.payWechat, qr: pay.wechatQr, logo: zh ? "微" : "W" });
-  if (pay.alipayQr) methods.push({ key: "alipay", label: L.payAlipay, qr: pay.alipayQr, logo: zh ? "支" : "A" });
+  if (pay.wechatQr) methods.push({ key: "wechat", label: L.payWechat, desc: L.payWechatDesc, qr: pay.wechatQr, logo: zh ? "微" : "W", recommended: true });
+  if (pay.alipayQr) methods.push({ key: "alipay", label: L.payAlipay, desc: L.payAlipayDesc, qr: pay.alipayQr, logo: zh ? "支" : "A" });
   if (!methods.length) return null;
 
   var box = el("div", { class: "pay-methods" });
@@ -1078,8 +1084,13 @@ function buildPayMethods(L) {
     card.setAttribute("role", "radio");
     card.setAttribute("aria-checked", m.key === "wechat" ? "true" : "false");
     card.appendChild(el("span", { class: "pay-method-logo pay-logo-" + m.key }, m.logo));
-    card.appendChild(el("span", { class: "pay-method-name" }, m.label));
-    card.appendChild(el("span", { class: "pay-method-check" }, "✓"));
+    var info = el("div", { class: "pay-method-info" });
+    var name = el("div", { class: "pay-method-name" }, m.label);
+    if (m.recommended) name.appendChild(el("span", { class: "pay-method-badge" }, L.payRecommended));
+    info.appendChild(name);
+    if (m.desc) info.appendChild(el("div", { class: "pay-method-desc" }, m.desc));
+    card.appendChild(info);
+    card.appendChild(el("span", { class: "pay-method-radio" }));
     card.addEventListener("click", function () {
       var all = list.querySelectorAll(".pay-method-card");
       for (var i = 0; i < all.length; i++) {
